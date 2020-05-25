@@ -96,11 +96,18 @@ namespace Sora.Events.BanchoEvents
 
                     if (args.IpAddress != "127.0.0.1" && args.IpAddress != "0.0.0.0")
                     {
-                        var data = Localisation.GetData(args.IpAddress);
+                        try
+                        {
+                            var data = Localisation.GetData(args.IpAddress);
 
-                        args.Pr.Info.Longitude = data.Location.Longitude ?? 0;
-                        args.Pr.Info.Latitude = data.Location.Latitude ?? 0;
-                        args.Pr.Info.CountryId = Localisation.StringToCountryId(data.Country.IsoCode);
+                            args.Pr.Info.Longitude = data.Location.Longitude ?? 0;
+                            args.Pr.Info.Latitude = data.Location.Latitude ?? 0;
+                            args.Pr.Info.CountryId = Localisation.StringToCountryId(data.Country.IsoCode);
+                        }
+                        catch
+                        {
+                            // Ignored.. doesn't matter too much
+                        }
                     }
 
                     args.Pr.User = dbUser;

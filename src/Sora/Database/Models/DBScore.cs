@@ -120,10 +120,13 @@ namespace Sora.Database.Models
                 .OrderByDescending(score => score.TotalScore)
                 .ThenByDescending(s => s.Accuracy) // Order by TotalScore and Accuracy. Score V2 Support
                 .Include(x => x.ScoreOwner)
+                .AsParallel()
                 .GroupBy(s =>
-                    s.UserId) // TODO: check
+                    s.UserId) // TODO: this is stupid. but we cant change it :c
                 .Take(50)
-                .Select(s => s.First());
+                .Select(s => s.First())
+                .OrderByDescending(score => score.TotalScore)
+                .ThenByDescending(s => s.Accuracy);
 
             foreach (var dbScore in query)
             {

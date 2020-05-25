@@ -20,10 +20,8 @@ namespace Sora.Utilities
 
         public static CityResponse GetData(string ip)
         {
-            using (var client = new DatabaseReader("geoip/GeoLite2-City/GeoLite2-City.mmdb"))
-            {
-                return client.City(ip);
-            }
+            using var client = new DatabaseReader("geoip/GeoLite2-City/GeoLite2-City.mmdb");
+            return client.City(ip);
         }
 
         public static CountryId StringToCountryId(string x) =>
