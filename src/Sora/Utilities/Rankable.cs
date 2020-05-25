@@ -31,28 +31,5 @@ namespace Sora.Utilities
                     return false;
             }
         }
-
-        public static bool IsRankableMods(Mod m)
-        {
-            if (m.HasFlag(Mod.Easy) && m.HasFlag(Mod.HardRock))
-                return false;
-
-            if (m.HasFlag(Mod.NoFail) && (m.HasFlag(Mod.SuddenDeath) || m.HasFlag(Mod.Perfect) ||
-                                          m.HasFlag(Mod.Relax) || m.HasFlag(Mod.Relax2)))
-                return false;
-
-            if (m.HasFlag(Mod.DoubleTime) && (m.HasFlag(Mod.DoubleTime) || m.HasFlag(Mod.Nightcore)))
-                return false;
-
-            if (m.HasFlag(Mod.Relax) && (m.HasFlag(Mod.Relax2) || m.HasFlag(Mod.NoFail) ||
-                                         m.HasFlag(Mod.SuddenDeath) || m.HasFlag(Mod.Perfect)))
-                return false;
-
-            if (m.HasFlag(Mod.Relax2) && (m.HasFlag(Mod.Relax) || m.HasFlag(Mod.NoFail) ||
-                                          m.HasFlag(Mod.SuddenDeath) || m.HasFlag(Mod.Perfect)))
-                return false;
-
-            return !m.HasFlag(Mod.Relax) && !m.HasFlag(Mod.Autoplay) && !m.HasFlag(Mod.Relax2);
-        }
     }
 }

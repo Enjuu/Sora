@@ -109,13 +109,11 @@ namespace Sora.Controllers.Web
                     beatmap = beatmaps.FirstOrDefault(s => s.FileMd5 == fileMd5);
                 }
 
-                ownScore = await DbScore.GetLatestScore(ctx, new DbScore
+                await foreach (var score in DbScore.GetScores(ctx, fileMd5, dbUser, playMode, false, false, false, mods, true))
                 {
-                    FileMd5 = fileMd5,
-                    UserId = dbUser.Id,
-                    PlayMode = playMode,
-                    TotalScore = 0,
-                });
+                    ownScore = score;
+                    break;
+                }
                 
                 if (beatmap != null)
                     set = new BeatmapSet

@@ -59,8 +59,11 @@ namespace Sora.Controllers.Web
 
             if (!ps.TryGet(dbUser.Id, out var pr))
                 return Ok("error: pass"); // User not logged in in Bancho!
+            
+            var set = await pisstaube.FetchBeatmapSetAsync(score.FileMd5);
+            var bm = set?.ChildrenBeatmaps.First(x => x.FileMD5 == score.FileMd5) ?? new Beatmap();
 
-            if (!pass || !RankedMods.IsRanked(score.Mods))
+            if (!pass || !RankedMods.IsRanked(score.Mods) || !Rankable.HasScoreboard(set?.RankedStatus ?? Pisstaube.RankedStatus.Graveyard))
             {
                 var lb = await DbLeaderboard.GetLeaderboardAsync(ctx, dbUser);
 
@@ -85,41 +88,17 @@ namespace Sora.Controllers.Web
             }
 
             var replayFileData = Request.Form.Files.GetFile("score");
-
-            var dbScore = new DbScore
-            {
-                Accuracy = score.ComputeAccuracy(),
-                Count100 = score.Count100,
-                Count50 = score.Count50,
-                Count300 = score.Count300,
-                Date = score.Date,
-                Mods = score.Mods,
-                CountGeki = score.CountGeki,
-                CountKatu = score.CountKatu,
-                CountMiss = score.CountMiss,
-                FileMd5 = score.FileMd5,
-                MaxCombo = score.MaxCombo,
-                PlayMode = score.PlayMode,
-                ScoreOwner = dbUser,
-                TotalScore = score.TotalScore,
-                UserId = dbUser.Id,
-            };
-
-            await pisstaube.DownloadBeatmapAsync(dbScore.FileMd5);
-
-            var set = await pisstaube.FetchBeatmapSetAsync(dbScore.FileMd5);
-
-            var bm = set?.ChildrenBeatmaps.First(x => x.FileMD5 == dbScore.FileMd5) ?? new Beatmap();
-
-
+            
+            await pisstaube.DownloadBeatmapAsync(score.FileMd5);
+            
             await using (var m = new MemoryStream())
             {
                 replayFileData.CopyTo(m);
                 m.Position = 0;
-                dbScore.ReplayMd5 = Hex.ToHex(Crypto.GetMd5(m)) ?? string.Empty;
-                if (!string.IsNullOrEmpty(dbScore.ReplayMd5))
+                score.ReplayMd5 = Hex.ToHex(Crypto.GetMd5(m)) ?? string.Empty;
+                if (!string.IsNullOrEmpty(score.ReplayMd5))
                 {
-                    await using var replayFile = System.IO.File.Create($"data/replays/{dbScore.ReplayMd5}");
+                    await using var replayFile = System.IO.File.Create($"data/replays/{score.ReplayMd5}");
                     m.Position = 0;
                     m.WriteTo(replayFile);
                     m.Close();
@@ -127,47 +106,46 @@ namespace Sora.Controllers.Web
                 }
             }
 
-            dbScore.PerformancePoints = dbScore.ComputePerformancePoints();
+            score.PerformancePoints = score.ComputePerformancePoints();
 
-            var oldScore = await DbScore.GetLatestScore(ctx, dbScore);
+            var oldScore = await DbScore.GetLatestScore(ctx, score);
 
-            var oldLb = await DbLeaderboard.GetLeaderboardAsync(ctx, dbScore.ScoreOwner);
-            var oldStdPos = oldLb.GetPosition(ctx, dbScore.PlayMode);
+            var oldLb = await DbLeaderboard.GetLeaderboardAsync(ctx, score.ScoreOwner);
+            var oldStdPos = oldLb.GetPosition(ctx, score.PlayMode);
 
-            var oldAcc = oldLb.GetAccuracy(ctx, dbScore.PlayMode);
+            var oldAcc = oldLb.GetAccuracy(ctx, score.PlayMode);
             double newAcc;
 
-            if (oldScore != null && oldScore.TotalScore <= dbScore.TotalScore)
+            if (oldScore != null && oldScore.TotalScore <= score.TotalScore)
             {
                 ctx.Remove(oldScore);
                 System.IO.File.Delete($"data/replays/{oldScore.ReplayMd5}");
 
-                await DbScore.InsertScore(ctx, dbScore);
+                await DbScore.InsertScore(ctx, score);
             }
             else if (oldScore == null)
             {
-                await DbScore.InsertScore(ctx, dbScore);
+                await DbScore.InsertScore(ctx, score);
             }
             else
             {
                 System.IO.File.Delete($"data/replays/{oldScore.ReplayMd5}");
             }
 
-            var newlb = await DbLeaderboard.GetLeaderboardAsync(ctx, dbScore.ScoreOwner);
+            var newlb = await DbLeaderboard.GetLeaderboardAsync(ctx, score.ScoreOwner);
 
-            newlb.IncreasePlaycount(dbScore.PlayMode);
-            newlb.IncreaseScore((ulong) dbScore.TotalScore, true, dbScore.PlayMode);
-            newlb.IncreaseScore((ulong) dbScore.TotalScore, false, dbScore.PlayMode);
-
-            if (Rankable.IsStatusRankable(set.RankedStatus))
-                newlb.UpdatePp(ctx, dbScore.PlayMode);
+            newlb.IncreasePlaycount(score.PlayMode);
+            newlb.IncreaseScore((ulong) score.TotalScore, true, score.PlayMode);
+            newlb.IncreaseScore((ulong) score.TotalScore, false, score.PlayMode);
+            
+            newlb.UpdatePp(ctx, score.PlayMode);
 
             await newlb.SaveChanges(ctx);
 
-            var newStdPos = newlb.GetPosition(ctx, dbScore.PlayMode);
-            newAcc = newlb.GetAccuracy(ctx, dbScore.PlayMode);
+            var newStdPos = newlb.GetPosition(ctx, score.PlayMode);
+            newAcc = newlb.GetAccuracy(ctx, score.PlayMode);
 
-            var newScore = await DbScore.GetLatestScore(ctx, dbScore);
+            var newScore = await DbScore.GetLatestScore(ctx, score);
 
             ulong oldRankedScore;
             ulong newRankedScore;
@@ -175,7 +153,7 @@ namespace Sora.Controllers.Web
             double oldPp;
             double newPp;
 
-            switch (dbScore.PlayMode)
+            switch (score.PlayMode)
             {
                 case PlayMode.Osu:
                     oldRankedScore = oldLb.RankedScoreOsu;
@@ -209,12 +187,12 @@ namespace Sora.Controllers.Web
                     return Ok("");
             }
 
-            var newScorePosition = newScore != null ? await newScore.Position(ctx) : 0;
-            var oldScorePosition = oldScore != null ? await oldScore.Position(ctx) : 0;
+            var newScorePosition = newScore?.Position(ctx) ?? 0;
+            var oldScorePosition = oldScore?.Position(ctx) ?? 0;
 
             if (newScorePosition == 1)
                 sora.SendMessage(
-                    $"[http://{config.Server.ScreenShotHostname}/{dbScore.ScoreOwner.Id} {dbScore.ScoreOwner.UserName}] " +
+                    $"[http://{config.Server.ScreenShotHostname}/{score.ScoreOwner.Id} {score.ScoreOwner.UserName}] " +
                     $"has reached #1 on [https://osu.ppy.sh/b/{bm.BeatmapID} {set?.Title} [{bm.DiffName}]] " +
                     $"using {ModUtil.ToString(newScore.Mods)} " +
                     $"Good job! +{newScore.PerformancePoints:F}PP",
@@ -223,8 +201,8 @@ namespace Sora.Controllers.Web
                 );
 
             Logger.Info(
-                $"{LCol.RED}{dbScore.ScoreOwner.UserName}",
-                $"{LCol.PURPLE}( {dbScore.ScoreOwner.Id} ){LCol.WHITE}",
+                $"{LCol.RED}{score.ScoreOwner.UserName}",
+                $"{LCol.PURPLE}( {score.ScoreOwner.Id} ){LCol.WHITE}",
                 $"has just submitted a Score! he earned {LCol.BLUE}{newScore?.PerformancePoints:F}PP",
                 $"{LCol.WHITE}with an Accuracy of {LCol.RED}{newScore?.Accuracy * 100:F}",
                 $"{LCol.WHITE}on {LCol.YELLOW}{set?.Title} [{bm.DiffName}]",
@@ -264,7 +242,7 @@ namespace Sora.Controllers.Web
                 newPp,
                 newScore?.Id ?? 0,
                 AchievementProcessor.ProcessAchievements(
-                    ctx, dbScore.ScoreOwner, score, bm, set, oldLb, newlb
+                    ctx, score.ScoreOwner, score, bm, set, oldLb, newlb
                 )
             );
 

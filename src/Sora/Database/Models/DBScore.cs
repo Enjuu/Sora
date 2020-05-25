@@ -48,20 +48,22 @@ namespace Sora.Database.Models
         [ForeignKey(nameof(UserId))]
         public DbUser ScoreOwner { get; set; }
         
-        public async Task<int> Position(SoraDbContext ctx)
-            => await ctx.Scores.Where(s => s.TotalScore > TotalScore &&
+        public int Position(SoraDbContext ctx)
+            => ctx.Scores.Where(s => s.TotalScore > TotalScore &&
                                            s.FileMd5 == FileMd5 &&
                                            s.PlayMode == PlayMode &&
-                                           s.UserId != UserId).CountAsync() + 1;
+                                           s.UserId != UserId)
+                .AsParallel()
+                .GroupBy(s => s.UserId).Count() + 1;
 
-        public double ComputeAccuracy()
+        public void ComputeAccuracy()
         {
             var totalHits = Count50 + Count100 + Count300 + CountMiss;
 
             if (PlayMode == PlayMode.Mania)
                 totalHits += CountGeki + CountKatu;
 
-            return PlayMode switch
+            Accuracy = PlayMode switch
             {
                 PlayMode.Osu => totalHits > 0
                     ? (double) (Count50 * 50 + Count100 * 100 + Count300 * 300) / (totalHits * 300)
@@ -118,14 +120,10 @@ namespace Sora.Database.Models
                 .Where(score => !modOnly || score.Mods == mods)
                 .Where(score => !onlySelf || score.UserId == user.Id)
                 .OrderByDescending(score => score.TotalScore)
-                .ThenByDescending(s => s.Accuracy) // Order by TotalScore and Accuracy. Score V2 Support
                 .Include(x => x.ScoreOwner)
-                .AsParallel()
-                .GroupBy(s =>
-                    s.UserId) // TODO: this is stupid. but we cant change it :c
+                .ToList()
+                .GroupBy(s => s.UserId) // TODO: this is stupid. but we cant change it :c
                 .Select(s => s.First())
-                .OrderByDescending(score => score.TotalScore)
-                .ThenByDescending(s => s.Accuracy)
                 .Take(50);
 
             foreach (var dbScore in query)
@@ -152,11 +150,11 @@ namespace Sora.Database.Models
         public static Task<DbScore> GetLatestScore(
             SoraDbContext ctx,
             DbScore newerScore
-        ) => ctx.Scores.Where(x => x.FileMd5 == newerScore.FileMd5 &&
-                                   x.UserId == newerScore.UserId &&
-                                   x.PlayMode == newerScore.PlayMode &&
-                                   x.TotalScore >= newerScore.TotalScore)
-            .OrderByDescending(x => x.TotalScore).ThenByDescending(s => s.Accuracy)
+        ) => ctx.Scores.Where(x => 
+                x.FileMd5 == newerScore.FileMd5 &&
+                x.UserId == newerScore.UserId &&
+                x.PlayMode == newerScore.PlayMode)
+            .OrderByDescending(x => x.TotalScore)
             .FirstOrDefaultAsync();
 
         public static async Task InsertScore(SoraDbContext ctx, DbScore score)

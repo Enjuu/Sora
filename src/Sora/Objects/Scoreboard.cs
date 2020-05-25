@@ -36,7 +36,6 @@ namespace Sora.Objects
             var count = 0;
             if (_ownScore != null)
             {
-                count++;
                 var ctx = ctxPool.Rent();
                 try
                 {
@@ -54,7 +53,7 @@ namespace Sora.Objects
                 var ctx = ctxPool.Rent();
                 try
                 {
-                    returnString += $"{score?.ToOsuString(ctx)}\n";
+                    returnString += $"{score.ToOsuString(ctx)}\n";
                 }
                 finally
                 {

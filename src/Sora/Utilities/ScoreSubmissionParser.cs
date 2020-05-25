@@ -38,6 +38,8 @@ namespace Sora.Utilities
                 Date = DateTime.Now,
             };
 
+            score.UserId = score.ScoreOwner?.Id ?? 0;
+
             return (bool.Parse(x[14]), score);
         }
     }

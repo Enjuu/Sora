@@ -1,5 +1,6 @@
 using System;
 using Microsoft.Extensions.Caching.Memory;
+using osu.Framework.Development;
 
 namespace Sora.Allocation
 {
@@ -13,6 +14,9 @@ namespace Sora.Allocation
 
         public void Set<T>(object key, T value, TimeSpan duration)
         {
+            if (!DebugUtils.IsDebugBuild)
+                return; // Skip cache in debug build.
+            
             var cacheEntryOptions = new MemoryCacheEntryOptions()
                 .SetAbsoluteExpiration(duration);
 

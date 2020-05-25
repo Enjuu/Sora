@@ -26,7 +26,7 @@ namespace Sora
                 s =>
                 {
                     i++;
-                    s.Accuracy = s.ComputeAccuracy();
+                    s.ComputeAccuracy();
                     if (i % 10000 == 0)
                         Logger.Info($"Score Id: {s.Id} | {i} of {sCount} {(double) i / (double) sCount:P}");
                 });
