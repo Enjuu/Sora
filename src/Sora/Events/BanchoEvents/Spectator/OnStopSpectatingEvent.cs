@@ -1,7 +1,9 @@
 using Sora.Attributes;
 using Sora.Enums;
 using Sora.EventArgs.BanchoEventArgs;
-using Sora.Framework.Packets.Server;
+using ChannelRevoked = Sora.Packets.Server.ChannelRevoked;
+using FellowSpectatorLeft = Sora.Packets.Server.FellowSpectatorLeft;
+using SpectatorLeft = Sora.Packets.Server.SpectatorLeft;
 
 namespace Sora.Events.BanchoEvents.Spectator
 {
@@ -13,7 +15,7 @@ namespace Sora.Events.BanchoEvents.Spectator
         {
             if (args.Pr?.Spectator == null)
                 return;
-            
+
             var opr = args.Pr.Spectator.Host;
 
             opr.Push(new FellowSpectatorLeft(args.Pr.User.Id));

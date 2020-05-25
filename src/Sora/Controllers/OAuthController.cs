@@ -12,7 +12,8 @@ using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using Sora.Database;
 using Sora.Database.Models;
-using Sora.Framework.Utilities;
+using Crypto = Sora.Utilities.Crypto;
+using Hex = Sora.Utilities.Hex;
 
 namespace Sora.Controllers
 {
@@ -37,7 +38,7 @@ namespace Sora.Controllers
             public string Username;
             public string Password;
         }
-        
+
         public struct OAuthPasswordAuth : IOAuth
         {
             public string Username;
@@ -45,7 +46,7 @@ namespace Sora.Controllers
             public string GrantType { get; set; }
             public string ClientId { get; set; }
             public string ClientSecret { get; set; }
-            
+
             public override string ToString()
                 => $"U: {Username} PW: {Password} GT: {GrantType} CID: {ClientId} CS: {ClientSecret}";
         }
@@ -69,7 +70,7 @@ namespace Sora.Controllers
                     JwtConstants.DirectKeyUseAlg, SecurityAlgorithms.Aes256CbcHmacSha512),
                 SigningCredentials = new SigningCredentials(
                     new SymmetricSecurityKey(key),
-                    SecurityAlgorithms.HmacSha256Signature)
+                    SecurityAlgorithms.HmacSha256Signature),
             };
 
             var token = tokenHandler.CreateToken(tokenDescriptor);
@@ -78,7 +79,7 @@ namespace Sora.Controllers
             {
                 token_type = "Bearer",
                 expires_in = Math.Round((double) tokenDescriptor.Expires?.Subtract(DateTime.UtcNow).TotalSeconds),
-                access_token = tokenHandler.WriteToken(token)
+                access_token = tokenHandler.WriteToken(token),
             });
         }
 
@@ -91,7 +92,7 @@ namespace Sora.Controllers
             {
                 auth = JsonConvert.DeserializeObject<PasswordAuth>(await reader.ReadToEndAsync());
             }
-            
+
             var user = await DbUser.GetDbUser(_ctx, auth.Username);
             if (user == null)
                 return BadRequest(new {code = 401, message = "Username is incorrect!"});
@@ -99,9 +100,9 @@ namespace Sora.Controllers
                 return BadRequest(new {code = 402, message = "Password is incorrect"});
 
             var key = Convert.FromBase64String(_cfg.Esc);
-            return Authorized(key, new [] { new Claim(ClaimTypes.Name, user.Id.ToString()), });
+            return Authorized(key, new[] {new Claim(ClaimTypes.Name, user.Id.ToString())});
         }
-        
+
         [AllowAnonymous]
         [HttpPost("token")]
         public async Task<IActionResult> AuthPassword()
@@ -117,7 +118,7 @@ namespace Sora.Controllers
                 return BadRequest(new {code = 403, message = "Client Doesn't exists!"});
             if (oauthClient.Secret != auth.ClientSecret)
                 return BadRequest(new {code = 404, message = "invalid secret!"});
-            
+
             var user = await DbUser.GetDbUser(_ctx, auth.Username);
             if (user == null || !user.IsPassword(Hex.ToHex(Crypto.GetMd5(auth.Password))))
                 return BadRequest(new {code = 400, message = "Username or password is incorrect"});

@@ -1,4 +1,5 @@
-using Sora.Framework.Objects;
+using Presence = Sora.Objects.Presence;
+using UserStatus = Sora.Objects.UserStatus;
 
 namespace Sora.EventArgs.BanchoEventArgs
 {

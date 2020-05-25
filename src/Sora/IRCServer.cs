@@ -5,9 +5,9 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 using Sora.Database;
-using Sora.Framework.Utilities;
 using Sora.Objects;
 using Sora.Services;
+using Logger = Sora.Utilities.Logger;
 
 namespace Sora
 {
@@ -39,15 +39,16 @@ namespace Sora
             _cs = cs;
             _evmng = evmng;
 
-            IPAddress ipAddress;
-            if (!IPAddress.TryParse(cfg.Server.Hostname, out ipAddress))
+            if (!IPAddress.TryParse(cfg.Server.Hostname, out var ipAddress))
                 ipAddress = Dns.GetHostEntry(cfg.Server.Hostname).AddressList[0];
+
             _listener = new TcpListener(ipAddress, cfg.Server.IrcPort);
 
             _token = new CancellationTokenSource();
             _connectedClients = new List<IrcClient>();
             _conLocker = new object();
         }
+
         public async void StartAsync()
         {
             await Task.Run(
@@ -55,34 +56,32 @@ namespace Sora
                 {
                     _listener.Start();
                     var isCanceled = false;
-                    
+
                     _token.Token.Register(
                         () => isCanceled = true
                     );
 
                     while (!isCanceled)
-                    {
                         try
                         {
                             var client = _listener.AcceptTcpClient();
-                            
+
                             var ircClient = new IrcClient(client, _ctx, _cfg, _ps, _cs, _evmng, this);
-                            lock(_conLocker)
+                            lock (_conLocker)
+                            {
                                 _connectedClients.Add(ircClient);
+                            }
+
                             new Thread(ircClient.Start).Start();
                         }
                         catch (Exception ex)
                         {
                             Logger.Err(ex);
                         }
-                    }
 
                     lock (_conLocker)
                     {
-                        foreach (var c in _connectedClients)
-                        {
-                            c.Stop();
-                        }
+                        foreach (var c in _connectedClients) c.Stop();
                     }
                 }
             );
@@ -90,10 +89,12 @@ namespace Sora
 
         public void RemoveTcpClient(IrcClient client)
         {
-            lock(_conLocker)
+            lock (_conLocker)
+            {
                 _connectedClients.Remove(client);
+            }
         }
-        
+
         public void Stop() => _token.Cancel();
     }
 }

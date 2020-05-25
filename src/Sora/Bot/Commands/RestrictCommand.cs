@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Sora.Framework;
-using Sora.Framework.Objects;
+using Presence = Sora.Objects.Presence;
 
 namespace Sora.Bot.Commands
 {
@@ -15,7 +14,7 @@ namespace Sora.Bot.Commands
             {
                 new Argument {ArgName = "User"},
                 new Argument {ArgName = "Duration (10d)"},
-                new Argument {ArgName = "Reason"}
+                new Argument {ArgName = "Reason"},
             };
 
         public int ExpectedArgs => 3;

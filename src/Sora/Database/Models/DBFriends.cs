@@ -43,14 +43,14 @@ namespace Sora.Database.Models
 
         [Required]
         public int UserId { get; set; }
-        
+
         [Required]
         [ForeignKey(nameof(UserId))]
         public DbUser User { get; set; }
 
         [Required]
         public int FriendId { get; set; }
-        
+
         [Required]
         [UsedImplicitly]
         [ForeignKey(nameof(FriendId))]
@@ -72,7 +72,7 @@ namespace Sora.Database.Models
         public static async Task RemoveFriend(SoraDbContext ctx, int userId, int friendId)
         {
             ctx.RemoveRange(ctx.Friends.Where(x => x.UserId == userId && x.FriendId == friendId));
-            
+
             await ctx.SaveChangesAsync();
         }
     }

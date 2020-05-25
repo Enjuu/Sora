@@ -5,7 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore;
-using Sora.Framework.Objects;
+using Achievement = Sora.Objects.Achievement;
 
 namespace Sora.Database.Models
 {
@@ -47,7 +47,7 @@ namespace Sora.Database.Models
                 Name = name,
                 Description = desc,
                 DisplayName = displayName,
-                IconURI = icon
+                IconURI = icon,
             });
 
             await ctx.SaveChangesAsync();

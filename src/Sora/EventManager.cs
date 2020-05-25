@@ -4,10 +4,10 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
 using Sora.Enums;
-using Sora.Framework.Utilities;
 using Sora.Attributes;
+using AttributeUtility = Sora.Utilities.AttributeUtility;
+using Logger = Sora.Utilities.Logger;
 
 
 namespace Sora
@@ -15,13 +15,13 @@ namespace Sora
     public interface IEventArgs
     {
     }
-    
+
     public class EventManager
     {
         private readonly IEnumerable<Assembly> _asma;
 
         private Dictionary<EventType, List<Type>> _eventClasses = new Dictionary<EventType, List<Type>>();
-        
+
         public EventManager(IEnumerable<Assembly> asma) => _asma = asma;
 
         public IServiceProvider Provider { get; private set; }
@@ -63,20 +63,18 @@ namespace Sora
                 var methods = AttributeUtility.GetTFromMethod<EventAttribute>(type);
 
                 var tArgs = (from cInfo in type.GetConstructors()
-                             from pInfo in cInfo.GetParameters()
-                             select Provider.GetService(pInfo.ParameterType)).ToArray();
+                    from pInfo in cInfo.GetParameters()
+                    select Provider.GetService(pInfo.ParameterType)).ToArray();
 
                 for (var i = 0; i < tArgs.Length; i++)
-                {
                     if (tArgs[i].GetType() == typeof(IServiceProvider))
                         tArgs[i] = Provider;
-                }
-                
+
                 if (tArgs.Any(x => x == null))
                     throw new Exception("Could not find Dependency, are you sure you registered the Dependency?");
 
                 var cls = Activator.CreateInstance(type, tArgs);
-                
+
                 foreach (var method in methods)
                 {
                     var o = new List<object>();
@@ -108,22 +106,20 @@ namespace Sora
                     throw new Exception("Event " + t + " Failed because " + t + " Is not a class!");
 
                 var eventTypes = AttributeUtility.GetTFromMethod<EventAttribute>(t)
-                                                 .Select(s => s.GetCustomAttribute<EventAttribute>()?.Type)
-                                                 .Where(s => s.HasValue)
-                                                 .Select(s => s.Value);
+                    .Select(s => s.GetCustomAttribute<EventAttribute>()?.Type)
+                    .Where(s => s.HasValue)
+                    .Select(s => s.Value);
 
                 foreach (var eType in eventTypes)
-                {
                     if (_eventClasses.TryGetValue(eType, out var types)) // TODO: finish
                     {
                         if (!types.Contains(t))
-                            types.Add(t);   
+                            types.Add(t);
                     }
                     else
                     {
-                        _eventClasses.Add(eType, new List<Type>{ t });
+                        _eventClasses.Add(eType, new List<Type> {t});
                     }
-                }
             }
         }
     }

@@ -1,5 +1,5 @@
-using Sora.Framework.Enums;
-using Sora.Framework.Objects;
+using Mod = Sora.Enums.Mod;
+using Presence = Sora.Objects.Presence;
 
 namespace Sora.EventArgs.BanchoEventArgs
 {

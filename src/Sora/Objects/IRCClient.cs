@@ -8,10 +8,10 @@ using Sora.Database;
 using Sora.Database.Models;
 using Sora.Enums;
 using Sora.EventArgs.BanchoEventArgs;
-using Sora.Framework;
-using Sora.Framework.Objects;
-using Sora.Framework.Utilities;
 using Sora.Services;
+using Crypto = Sora.Utilities.Crypto;
+using Hex = Sora.Utilities.Hex;
+using Logger = Sora.Utilities.Logger;
 
 namespace Sora.Objects
 {
@@ -27,12 +27,12 @@ namespace Sora.Objects
         private bool _exit;
 
         public IrcClient(TcpClient client,
-                         SoraDbContext ctx,
-                         IServerConfig cfg,
-                         PresenceService ps,
-                         ChannelService cs,
-                         EventManager evmng,
-                         IrcServer parent)
+            SoraDbContext ctx,
+            IServerConfig cfg,
+            PresenceService ps,
+            ChannelService cs,
+            EventManager evmng,
+            IrcServer parent)
         {
             _client = client;
             _ctx = ctx;
@@ -43,7 +43,7 @@ namespace Sora.Objects
             _evmng = evmng;
         }
 
-        private User _user;
+        private DbUser _user;
         private Presence _presence;
         private bool _authorized;
         private string _nickname;
@@ -70,37 +70,33 @@ namespace Sora.Objects
         {
             if (string.IsNullOrEmpty(nickname))
                 nickname = _user?.UserName ?? _nickname;
-            
+
             if (!string.IsNullOrEmpty(channel))
                 channel += " " + channel;
 
             SendMessage($"{code:000} {nickname}:{channel} :{message}");
         }
-        
+
         public async Task Receive()
         {
             var stream = _client.GetStream();
             var bytes = new byte[4096];
 
             _writer = new StreamWriter(stream);
-            
+
             // TODO: Finish http://www.networksorcery.com/enp/protocol/irc.htm
             try
             {
                 int i;
                 while ((i = stream.Read(bytes, 0, bytes.Length)) != 0)
                 {
-                    if (_exit)
-                    {
-                        return;
-                    }
-                    
+                    if (_exit) return;
+
                     var data = Encoding.UTF8.GetString(bytes, 0, i).Split("\n");
 
                     foreach (var cmd in data.Select(d => d.Split(" "))
-                                            .Where(cmd => !string.IsNullOrEmpty(cmd[0]))
-                                            .Where(cmd => !string.IsNullOrWhiteSpace(cmd[0])))
-                    {
+                        .Where(cmd => !string.IsNullOrEmpty(cmd[0]))
+                        .Where(cmd => !string.IsNullOrWhiteSpace(cmd[0])))
                         switch (cmd[0])
                         {
                             case "USER":
@@ -109,7 +105,7 @@ namespace Sora.Objects
                                     SendCodeMessage(462, "Unauthorized command (already authorized!)");
                                     continue;
                                 }
-                                
+
                                 if (cmd.Length < 2)
                                 {
                                     SendCodeMessage(451, "You have not registered");
@@ -124,7 +120,7 @@ namespace Sora.Objects
                                     continue;
                                 }
 
-                                _user = rUser.ToUser();
+                                _user = rUser;
 
                                 if (_authorized)
                                 {
@@ -136,16 +132,16 @@ namespace Sora.Objects
                                 {
                                     if (string.IsNullOrEmpty(_nickname))
                                         _nickname = "anonymous";
-                                    
+
                                     Logger.Info(_pass);
 
                                     SendCodeMessage(464, "Password incorrect");
                                     continue;
                                 }
 
-                                _presence = new Presence(_user);
+                                _presence = new Presence();
                                 _presence.User = _user;
-                                
+
                                 _presence["STATUS"] = new UserStatus();
                                 _presence["IRC"] = true;
 
@@ -155,14 +151,14 @@ namespace Sora.Objects
 
                                 _authorized = true;
                                 break;
-                            
+
                             case "JOIN":
                                 if (_presence == null || !_authorized)
                                 {
                                     SendCodeMessage(444, "You're not logged in");
                                     break;
                                 }
-                                
+
                                 if (_cs.TryGet(cmd[1].Trim(), out var channel))
                                 {
                                     SendCodeMessage(403, $"{cmd[1]}: No such Channel!");
@@ -177,7 +173,7 @@ namespace Sora.Objects
                                     break;
                                 }
                                 */
-                                
+
                                 if (channel.Topic == "")
                                     SendCodeMessage(331, "No topic is set", channel: channel.Name);
                                 else
@@ -185,42 +181,43 @@ namespace Sora.Objects
 
                                 var uList = string.Join(
                                     " ", channel.Presences
-                                                .Select(
-                                                    ps =>
-                                                    {
-                                                        var ret = ps.User.UserName.Replace(" ", "_");
+                                        .Select(
+                                            ps =>
+                                            {
+                                                var ret = ps.User.UserName.Replace(" ", "_");
 
-                                                        if (ps.User.Permissions.HasPermission(Permission.GROUP_CHAT_MOD))
-                                                            ret = "@" + ret;
-                                                        else if (ps.User.Permissions.HasPermission(
-                                                            Permission.GROUP_DONATOR
-                                                        ))
-                                                            ret = "+" + ret;
-                                                        
-                                                        return ret;
-                                                    })
-                                                .ToArray()
+                                                if (ps.User.Permissions.HasPermission(Permission.GROUP_CHAT_MOD))
+                                                    ret = "@" + ret;
+                                                else if (ps.User.Permissions.HasPermission(
+                                                    Permission.GROUP_DONATOR
+                                                ))
+                                                    ret = "+" + ret;
+
+                                                return ret;
+                                            })
+                                        .ToArray()
                                 );
                                 uList += " @olSora";
                                 SendCodeMessage(353, $"{uList}", channel: "= " + channel.Name);
                                 SendCodeMessage(366, "End of NAMES list", channel: channel.Name);
                                 break;
-                            
+
                             case "PING":
-                                if (_presence == null || !_authorized) {
+                                if (_presence == null || !_authorized)
+                                {
                                     SendCodeMessage(444, "You're not logged in");
                                     break;
                                 }
 
                                 await _evmng.RunEvent(EventType.BanchoPong, new BanchoPongArgs {Pr = _presence});
-                                
+
                                 SendMessage($"PONG {_cfg.Server.Hostname}: {cmd[1]}");
                                 break;
-                            
+
                             case "PASS":
                                 _pass = cmd[1];
                                 break;
-                            
+
                             case "QUIT":
                                 _client.Close();
                                 _parent.RemoveTcpClient(this);
@@ -230,14 +227,13 @@ namespace Sora.Objects
                             case "NICK":
                             case "CAP":
                                 break;
-                            
+
                             default:
                                 Logger.Debug(string.Join(" ", cmd));
                                 if (!_authorized)
                                     SendCodeMessage(444, "You're not logged in");
                                 break;
                         }
-                    }
 
                     _writer.Flush();
                 }
@@ -261,7 +257,7 @@ namespace Sora.Objects
         {
             SendCodeMessage(251, $"There are {_ps.ConnectedPresences} users and 0 services on 1 server");
         }
-        
+
         private void WriteMotd()
         {
             SendCodeMessage(375, $"- {_cfg.Server.Hostname} Message of the day - ");

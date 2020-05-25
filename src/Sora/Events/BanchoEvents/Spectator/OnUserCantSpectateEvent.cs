@@ -1,7 +1,7 @@
 using Sora.Attributes;
 using Sora.Enums;
 using Sora.EventArgs.BanchoEventArgs;
-using Sora.Framework.Packets.Server;
+using SpectatorCantSpectate = Sora.Packets.Server.SpectatorCantSpectate;
 
 namespace Sora.Events.BanchoEvents.Spectator
 {

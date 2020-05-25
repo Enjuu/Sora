@@ -1,5 +1,6 @@
-using Sora.Framework.Objects;
-using Sora.Framework.Utilities;
+using MStreamReader = Sora.Utilities.MStreamReader;
+using MStreamWriter = Sora.Utilities.MStreamWriter;
+using Presence = Sora.Objects.Presence;
 
 namespace Sora.EventArgs.BanchoEventArgs
 {

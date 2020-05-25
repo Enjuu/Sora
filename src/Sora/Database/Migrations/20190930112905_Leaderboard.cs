@@ -8,13 +8,13 @@ namespace Sora.Database.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<string>(
-                name: "ReplayMd5",
-                table: "Scores",
+                "ReplayMd5",
+                "Scores",
                 nullable: true);
 
             migrationBuilder.CreateTable(
-                name: "Leaderboard",
-                columns: table => new
+                "Leaderboard",
+                table => new
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
@@ -33,16 +33,16 @@ namespace Sora.Database.Migrations
                     PerformancePointsOsu = table.Column<double>(nullable: false),
                     PerformancePointsTaiko = table.Column<double>(nullable: false),
                     PerformancePointsCtb = table.Column<double>(nullable: false),
-                    PerformancePointsMania = table.Column<double>(nullable: false)
+                    PerformancePointsMania = table.Column<double>(nullable: false),
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Leaderboard", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Leaderboard_Users_Id",
-                        column: x => x.Id,
-                        principalTable: "Users",
-                        principalColumn: "Id",
+                        "FK_Leaderboard_Users_Id",
+                        x => x.Id,
+                        "Users",
+                        "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
         }
@@ -50,11 +50,11 @@ namespace Sora.Database.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Leaderboard");
+                "Leaderboard");
 
             migrationBuilder.DropColumn(
-                name: "ReplayMd5",
-                table: "Scores");
+                "ReplayMd5",
+                "Scores");
         }
     }
 }

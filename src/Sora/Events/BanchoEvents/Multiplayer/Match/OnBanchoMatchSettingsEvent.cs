@@ -1,7 +1,7 @@
 using Sora.Attributes;
 using Sora.Enums;
 using Sora.EventArgs.BanchoEventArgs;
-using Sora.Framework.Utilities;
+using Logger = Sora.Utilities.Logger;
 
 namespace Sora.Events.BanchoEvents.Multiplayer.Match
 {

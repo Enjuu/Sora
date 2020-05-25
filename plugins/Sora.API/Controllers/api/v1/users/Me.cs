@@ -5,8 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Sora.Database;
 using Sora.Database.Models;
-using Sora.Framework;
-using Sora.Framework.Enums;
+using Sora.Enums;
 
 namespace Sora.API.Controllers.api.v1.users
 {

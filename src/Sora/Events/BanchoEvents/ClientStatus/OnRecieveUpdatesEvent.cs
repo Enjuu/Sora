@@ -1,7 +1,7 @@
 using Sora.Attributes;
 using Sora.Enums;
 using Sora.EventArgs.BanchoEventArgs;
-using Sora.Framework.Packets.Server;
+using HandleUpdate = Sora.Packets.Server.HandleUpdate;
 
 namespace Sora.Events.BanchoEvents.ClientStatus
 {

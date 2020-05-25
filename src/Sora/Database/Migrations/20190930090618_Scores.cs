@@ -9,8 +9,8 @@ namespace Sora.Database.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Scores",
-                columns: table => new
+                "Scores",
+                table => new
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
@@ -29,29 +29,29 @@ namespace Sora.Database.Migrations
                     Date = table.Column<DateTime>(nullable: false),
                     ReplayId = table.Column<int>(nullable: true),
                     Accuracy = table.Column<double>(nullable: false),
-                    PerformancePoints = table.Column<double>(nullable: false)
+                    PerformancePoints = table.Column<double>(nullable: false),
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Scores", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Scores_Users_UserId",
-                        column: x => x.UserId,
-                        principalTable: "Users",
-                        principalColumn: "Id",
+                        "FK_Scores_Users_UserId",
+                        x => x.UserId,
+                        "Users",
+                        "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Scores_UserId",
-                table: "Scores",
-                column: "UserId");
+                "IX_Scores_UserId",
+                "Scores",
+                "UserId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Scores");
+                "Scores");
         }
     }
 }

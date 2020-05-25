@@ -3,7 +3,7 @@ namespace Sora
     public static class License
     {
         public const string l =
-@"%#FFFFFF%Sora V1.0.0
+            @"%#FFFFFF%Sora V1.0.0
 
 %#800000%=============================== %#F94848%License %#800000%=================================
 %#F94848%Sora - A Modular Bancho written in C#
@@ -23,6 +23,5 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 %#800000%==========================================================================
 ";
-        
     }
 }

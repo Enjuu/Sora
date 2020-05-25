@@ -7,56 +7,56 @@ namespace Sora.Database.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AlterColumn<string>(
-                name: "UserName",
-                table: "Users",
+                "UserName",
+                "Users",
                 nullable: false,
                 oldClrType: typeof(string),
                 oldNullable: true);
 
             migrationBuilder.AlterColumn<string>(
-                name: "Permissions",
-                table: "Users",
+                "Permissions",
+                "Users",
                 nullable: false,
                 oldClrType: typeof(string),
                 oldNullable: true);
 
             migrationBuilder.AlterColumn<string>(
-                name: "Password",
-                table: "Users",
+                "Password",
+                "Users",
                 nullable: false,
                 oldClrType: typeof(string),
                 oldNullable: true);
 
             migrationBuilder.AlterColumn<string>(
-                name: "EMail",
-                table: "Users",
+                "EMail",
+                "Users",
                 nullable: false,
                 oldClrType: typeof(string),
                 oldNullable: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Friends_FriendId",
-                table: "Friends",
-                column: "FriendId");
+                "IX_Friends_FriendId",
+                "Friends",
+                "FriendId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Friends_UserId",
-                table: "Friends",
-                column: "UserId");
+                "IX_Friends_UserId",
+                "Friends",
+                "UserId");
 
             migrationBuilder.AddForeignKey(
-                name: "FK_Friends_Users_FriendId",
-                table: "Friends",
-                column: "FriendId",
-                principalTable: "Users",
+                "FK_Friends_Users_FriendId",
+                "Friends",
+                "FriendId",
+                "Users",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Cascade);
 
             migrationBuilder.AddForeignKey(
-                name: "FK_Friends_Users_UserId",
-                table: "Friends",
-                column: "UserId",
-                principalTable: "Users",
+                "FK_Friends_Users_UserId",
+                "Friends",
+                "UserId",
+                "Users",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Cascade);
         }
@@ -64,42 +64,42 @@ namespace Sora.Database.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
-                name: "FK_Friends_Users_FriendId",
-                table: "Friends");
+                "FK_Friends_Users_FriendId",
+                "Friends");
 
             migrationBuilder.DropForeignKey(
-                name: "FK_Friends_Users_UserId",
-                table: "Friends");
+                "FK_Friends_Users_UserId",
+                "Friends");
 
             migrationBuilder.DropIndex(
-                name: "IX_Friends_FriendId",
-                table: "Friends");
+                "IX_Friends_FriendId",
+                "Friends");
 
             migrationBuilder.DropIndex(
-                name: "IX_Friends_UserId",
-                table: "Friends");
+                "IX_Friends_UserId",
+                "Friends");
 
             migrationBuilder.AlterColumn<string>(
-                name: "UserName",
-                table: "Users",
+                "UserName",
+                "Users",
                 nullable: true,
                 oldClrType: typeof(string));
 
             migrationBuilder.AlterColumn<string>(
-                name: "Permissions",
-                table: "Users",
+                "Permissions",
+                "Users",
                 nullable: true,
                 oldClrType: typeof(string));
 
             migrationBuilder.AlterColumn<string>(
-                name: "Password",
-                table: "Users",
+                "Password",
+                "Users",
                 nullable: true,
                 oldClrType: typeof(string));
 
             migrationBuilder.AlterColumn<string>(
-                name: "EMail",
-                table: "Users",
+                "EMail",
+                "Users",
                 nullable: true,
                 oldClrType: typeof(string));
         }

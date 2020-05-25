@@ -2,9 +2,31 @@ using System.Threading.Tasks;
 using Sora.Attributes;
 using Sora.Enums;
 using Sora.EventArgs.BanchoEventArgs;
-using Sora.Framework.Enums;
-using Sora.Framework.Packets.Client;
-using Sora.Framework.Utilities;
+using BeatmapInfoRequest = Sora.Packets.Client.BeatmapInfoRequest;
+using ChannelJoin = Sora.Packets.Client.ChannelJoin;
+using ChannelLeave = Sora.Packets.Client.ChannelLeave;
+using Exit = Sora.Packets.Client.Exit;
+using FriendAdd = Sora.Packets.Client.FriendAdd;
+using FriendRemove = Sora.Packets.Client.FriendRemove;
+using Hex = Sora.Utilities.Hex;
+using Invite = Sora.Packets.Client.Invite;
+using Logger = Sora.Utilities.Logger;
+using MatchChangeMods = Sora.Packets.Client.MatchChangeMods;
+using MatchChangePassword = Sora.Packets.Client.MatchChangePassword;
+using MatchChangeSettings = Sora.Packets.Client.MatchChangeSettings;
+using MatchChangeSlot = Sora.Packets.Client.MatchChangeSlot;
+using MatchCreate = Sora.Packets.Client.MatchCreate;
+using MatchJoin = Sora.Packets.Client.MatchJoin;
+using MatchLock = Sora.Packets.Client.MatchLock;
+using MatchScoreUpdate = Sora.Packets.Client.MatchScoreUpdate;
+using MatchTransferHost = Sora.Packets.Client.MatchTransferHost;
+using PacketId = Sora.Enums.PacketId;
+using SendIrcMessage = Sora.Packets.Client.SendIrcMessage;
+using SendUserStatus = Sora.Packets.Client.SendUserStatus;
+using SpectatorFrames = Sora.Packets.Client.SpectatorFrames;
+using StartSpectating = Sora.Packets.Client.StartSpectating;
+using UserPresenceRequest = Sora.Packets.Client.UserPresenceRequest;
+using UserStatsRequest = Sora.Packets.Client.UserStatsRequest;
 
 namespace Sora.Events.BanchoEvents
 {
@@ -13,10 +35,7 @@ namespace Sora.Events.BanchoEvents
     {
         private readonly EventManager _evmgr;
 
-        public OnBanchoPacketEvent(EventManager evmgr)
-        {
-            _evmgr = evmgr;
-        }
+        public OnBanchoPacketEvent(EventManager evmgr) => _evmgr = evmgr;
 
         /*
         private object GetRightEventArgs(PacketId id)
@@ -50,7 +69,7 @@ namespace Sora.Events.BanchoEvents
                         EventType.BanchoSendUserStatus,
                         new BanchoSendUserStatusArgs
                         {
-                            Pr = args.Pr, Status = args.Data.ReadData<SendUserStatus>().Status
+                            Pr = args.Pr, Status = args.Data.ReadData<SendUserStatus>().Status,
                         }
                     );
                     break;
@@ -71,7 +90,7 @@ namespace Sora.Events.BanchoEvents
                         EventType.BanchoUserStatsRequest,
                         new BanchoUserStatsRequestArgs
                         {
-                            Pr = args.Pr, UserIds = args.Data.ReadData<UserStatsRequest>().Userids
+                            Pr = args.Pr, UserIds = args.Data.ReadData<UserStatsRequest>().Userids,
                         }
                     );
                     break;
@@ -84,7 +103,8 @@ namespace Sora.Events.BanchoEvents
                 case PacketId.ClientUserPresenceRequest:
                     await _evmgr.RunEvent(
                         EventType.BanchoUserPresenceRequest,
-                        new BanchoClientUserPresenceRequestArgs {Pr = args.Pr, UserIds = args.Data.ReadData<UserPresenceRequest>().UserIds }
+                        new BanchoClientUserPresenceRequestArgs
+                            {Pr = args.Pr, UserIds = args.Data.ReadData<UserPresenceRequest>().UserIds}
                     );
                     break;
 
@@ -97,7 +117,7 @@ namespace Sora.Events.BanchoEvents
                         EventType.BanchoChannelJoin,
                         new BanchoChannelJoinArgs
                         {
-                            Pr = args.Pr, ChannelName = args.Data.ReadData<ChannelJoin>().ChannelName
+                            Pr = args.Pr, ChannelName = args.Data.ReadData<ChannelJoin>().ChannelName,
                         }
                     );
                     break;
@@ -106,7 +126,7 @@ namespace Sora.Events.BanchoEvents
                         EventType.BanchoChannelLeave,
                         new BanchoChannelLeaveArgs
                         {
-                            Pr = args.Pr, ChannelName = args.Data.ReadData<ChannelLeave>().ChannelName
+                            Pr = args.Pr, ChannelName = args.Data.ReadData<ChannelLeave>().ChannelName,
                         }
                     );
                     break;
@@ -142,7 +162,7 @@ namespace Sora.Events.BanchoEvents
                         EventType.BanchoFriendRemove,
                         new BanchoFriendRemoveArgs
                         {
-                            Pr = args.Pr, FriendId = args.Data.ReadData<FriendRemove>().FriendId
+                            Pr = args.Pr, FriendId = args.Data.ReadData<FriendRemove>().FriendId,
                         }
                     );
                     break;
@@ -156,7 +176,7 @@ namespace Sora.Events.BanchoEvents
                         EventType.BanchoStartSpectating,
                         new BanchoStartSpectatingArgs
                         {
-                            Pr = args.Pr, SpectatorHostId = args.Data.ReadData<StartSpectating>().ToSpectateId
+                            Pr = args.Pr, SpectatorHostId = args.Data.ReadData<StartSpectating>().ToSpectateId,
                         }
                     );
                     break;
@@ -177,7 +197,7 @@ namespace Sora.Events.BanchoEvents
                         EventType.BanchoBroadcastFrames,
                         new BanchoBroadcastFramesArgs
                         {
-                            Pr = args.Pr, Frames = args.Data.ReadData<SpectatorFrames>().Frames
+                            Pr = args.Pr, Frames = args.Data.ReadData<SpectatorFrames>().Frames,
                         }
                     );
                     break;
@@ -225,7 +245,7 @@ namespace Sora.Events.BanchoEvents
                         EventType.BanchoMatchChangeSlot,
                         new BanchoMatchChangeSlotArgs
                         {
-                            Pr = args.Pr, SlotId = args.Data.ReadData<MatchChangeSlot>().SlotId
+                            Pr = args.Pr, SlotId = args.Data.ReadData<MatchChangeSlot>().SlotId,
                         }
                     );
                     break;
@@ -243,7 +263,7 @@ namespace Sora.Events.BanchoEvents
                     break;
                 case PacketId.ClientMatchChangeSettings:
                     var y = args.Data.ReadData<MatchChangeSettings>().Match;
-                    
+
                     await _evmgr.RunEvent(
                         EventType.BanchoMatchChangeSettings,
                         new BanchoMatchChangeSettingsArgs {Pr = args.Pr, Room = y}
@@ -280,7 +300,7 @@ namespace Sora.Events.BanchoEvents
                         EventType.BanchoMatchTransferHost,
                         new BanchoMatchTransferHostArgs
                         {
-                            Pr = args.Pr, SlotId = args.Data.ReadData<MatchTransferHost>().SlotId
+                            Pr = args.Pr, SlotId = args.Data.ReadData<MatchTransferHost>().SlotId,
                         }
                     );
                     break;
@@ -319,7 +339,7 @@ namespace Sora.Events.BanchoEvents
                         EventType.BanchoMatchScoreUpdate,
                         new BanchoMatchScoreUpdateArgs
                         {
-                            Pr = args.Pr, Frame = args.Data.ReadData<MatchScoreUpdate>().Frame
+                            Pr = args.Pr, Frame = args.Data.ReadData<MatchScoreUpdate>().Frame,
                         }
                     );
                     break;
@@ -356,7 +376,7 @@ namespace Sora.Events.BanchoEvents
                     var data = args.Data.ReadData<BeatmapInfoRequest>();
                     await _evmgr.RunEvent(
                         EventType.BanchoBeatmapInfoRequest,
-                        new BanchoBeatmapInfoRequestArgs{Pr = args.Pr, FileNames = data.FileNames});
+                        new BanchoBeatmapInfoRequestArgs {Pr = args.Pr, FileNames = data.FileNames});
                     break;
                 default:
                     Logger.Debug(

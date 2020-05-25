@@ -5,8 +5,11 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using Sora.Framework.Enums;
-using Sora.Framework.Utilities;
+using CountryId = Sora.Enums.CountryId;
+using Crypto = Sora.Utilities.Crypto;
+using Hex = Sora.Utilities.Hex;
+using Mod = Sora.Enums.Mod;
+using PlayMode = Sora.Enums.PlayMode;
 
 namespace Sora.Database.Models
 {
@@ -22,6 +25,7 @@ namespace Sora.Database.Models
 
         [Column(TypeName = "varchar(32)")]
         public string FileMd5 { get; set; }
+
         public int Count300 { get; set; }
         public int Count100 { get; set; }
         public int Count50 { get; set; }
@@ -33,21 +37,22 @@ namespace Sora.Database.Models
         public Mod Mods { get; set; }
         public PlayMode PlayMode { get; set; }
         public DateTime Date { get; set; }
-        
+
         [Column(TypeName = "varchar(32)")]
         public string? ReplayMd5 { get; set; }
+
         public double Accuracy { get; set; }
         public double PerformancePoints { get; set; }
-        
+
         [Required]
         [ForeignKey(nameof(UserId))]
         public DbUser ScoreOwner { get; set; }
-
+        
         public async Task<int> Position(SoraDbContext ctx)
             => await ctx.Scores.Where(s => s.TotalScore > TotalScore &&
-                                           s.FileMd5 == FileMd5 && 
-                                           s.PlayMode == PlayMode && 
-                                           s.UserId != UserId).CountAsync() +1;
+                                           s.FileMd5 == FileMd5 &&
+                                           s.PlayMode == PlayMode &&
+                                           s.UserId != UserId).CountAsync() + 1;
 
         public double ComputeAccuracy()
         {
@@ -58,16 +63,16 @@ namespace Sora.Database.Models
 
             return PlayMode switch
             {
-                PlayMode.Osu => (totalHits > 0
+                PlayMode.Osu => totalHits > 0
                     ? (double) (Count50 * 50 + Count100 * 100 + Count300 * 300) / (totalHits * 300)
-                    : 1),
-                PlayMode.Taiko => (totalHits > 0 ? (double) (Count100 * 150 + Count300 * 300) / (totalHits * 300) : 1),
-                PlayMode.Ctb => (totalHits > 0 ? (double) (Count50 + Count100 + Count300) / totalHits : 1),
-                PlayMode.Mania => (totalHits > 0
+                    : 1,
+                PlayMode.Taiko => totalHits > 0 ? (double) (Count100 * 150 + Count300 * 300) / (totalHits * 300) : 1,
+                PlayMode.Ctb => totalHits > 0 ? (double) (Count50 + Count100 + Count300) / totalHits : 1,
+                PlayMode.Mania => totalHits > 0
                     ? (double) (Count50 * 50 + Count100 * 100 + CountKatu * 200 + (Count300 + CountGeki) * 300) /
                       (totalHits * 300)
-                    : 1),
-                _ => 0
+                    : 1,
+                _ => 0,
             };
         }
 
@@ -79,12 +84,12 @@ namespace Sora.Database.Models
             )
         );
 
-        public static async Task<List<DbScore>> GetScores(
-                SoraDbContext ctx,
-                string fileMd5, DbUser user, PlayMode playMode = PlayMode.Osu,
-                bool friendsOnly = false, bool countryOnly = false, bool modOnly = false,
-                Mod mods = Mod.None, bool onlySelf = false
-            )
+        public static async IAsyncEnumerable<DbScore> GetScores(
+            SoraDbContext ctx,
+            string fileMd5, DbUser user, PlayMode playMode = PlayMode.Osu,
+            bool friendsOnly = false, bool countryOnly = false, bool modOnly = false,
+            Mod mods = Mod.None, bool onlySelf = false
+        )
         {
             const CountryId cid = CountryId.XX;
 
@@ -94,33 +99,36 @@ namespace Sora.Database.Models
             */
 
             var query = ctx.Scores
-                               .Where(score => score.FileMd5 == fileMd5 && score.PlayMode == playMode)
-                               .Where(
-                                   score
-                                       => !friendsOnly || ctx.Friends
-                                                                 .Where(f => f.UserId == user.Id)
-                                                                 .Select(f => f.FriendId)
-                                                                 .Contains(score.UserId)
-                               )
-                               /* Legacy Code TODO: Implement
-                               .Where(
-                                   score
-                                       => !countryOnly || factory.Get().UserStats
-                                                                 .Select(c => c.CountryId)
-                                                                 .Contains(cid)
-                               )
-                               */
-                               .Where(score => !modOnly || score.Mods == mods)
-                               .Where(score => !onlySelf || score.UserId == user.Id)
-                               .OrderByDescending(score => score.TotalScore)
-                               .ThenByDescending(s => s.Accuracy) // Order by TotalScore and Accuracy. Score V2 Support
-                               .Include(x => x.ScoreOwner)
-                               .ToList() // There goes our memory :c
-                               .GroupBy(s => s.UserId) // Requires to be Client Side since EF Core is the big stupid and don't recognize this.
-                               .Take(50)
-                               .Select(s => s.First());
+                .Where(score => score.FileMd5 == fileMd5 && score.PlayMode == playMode)
+                .Where(
+                    score
+                        => !friendsOnly || ctx.Friends
+                            .Where(f => f.UserId == user.Id)
+                            .Select(f => f.FriendId)
+                            .Contains(score.UserId)
+                )
+                /* Legacy Code TODO: Implement
+                .Where(
+                    score
+                        => !countryOnly || factory.Get().UserStats
+                                                  .Select(c => c.CountryId)
+                                                  .Contains(cid)
+                )
+                */
+                .Where(score => !modOnly || score.Mods == mods)
+                .Where(score => !onlySelf || score.UserId == user.Id)
+                .OrderByDescending(score => score.TotalScore)
+                .ThenByDescending(s => s.Accuracy) // Order by TotalScore and Accuracy. Score V2 Support
+                .Include(x => x.ScoreOwner)
+                .GroupBy(s =>
+                    s.UserId) // TODO: check
+                .Take(50)
+                .Select(s => s.First());
 
-            return query.ToList();
+            foreach (var dbScore in query)
+            {
+                yield return dbScore;
+            }
         }
 
         public static Task<DbScore> GetScore(
@@ -142,16 +150,16 @@ namespace Sora.Database.Models
             SoraDbContext ctx,
             DbScore newerScore
         ) => ctx.Scores.Where(x => x.FileMd5 == newerScore.FileMd5 &&
-                                             x.UserId == newerScore.UserId &&
-                                             x.PlayMode == newerScore.PlayMode &&
-                                             x.TotalScore >= newerScore.TotalScore)
-                    .OrderByDescending(x => x.TotalScore).ThenByDescending(s => s.Accuracy)
-                    .FirstOrDefaultAsync();
+                                   x.UserId == newerScore.UserId &&
+                                   x.PlayMode == newerScore.PlayMode &&
+                                   x.TotalScore >= newerScore.TotalScore)
+            .OrderByDescending(x => x.TotalScore).ThenByDescending(s => s.Accuracy)
+            .FirstOrDefaultAsync();
 
         public static async Task InsertScore(SoraDbContext ctx, DbScore score)
         {
             var so = score.ScoreOwner; // Fix for an Issue with Inserting.
-            
+
             score.ScoreOwner = null;
             ctx.Add(score);
 
@@ -159,5 +167,22 @@ namespace Sora.Database.Models
 
             await ctx.SaveChangesAsync();
         }
+
+        public string ToOsuString(SoraDbContext ctx) => $"{Id}|" +
+                                                        $"{ScoreOwner.UserName.Replace("|", "I")}|" +
+                                                        $"{TotalScore}|" +
+                                                        $"{MaxCombo}|" +
+                                                        $"{Count50}|" +
+                                                        $"{Count100}|" +
+                                                        $"{Count300}|" +
+                                                        $"{CountMiss}|" +
+                                                        $"{CountKatu}|" +
+                                                        $"{CountGeki}|" +
+                                                        $"{MaxCombo >= Count50 + Count100 + Count300 + CountMiss}|" +
+                                                        $"{(short) Mods}|" +
+                                                        $"{UserId}|" +
+                                                        $"{Position(ctx)}|" +
+                                                        $"{(int) Date.ToUniversalTime().Subtract(new DateTime(1970, 1, 1)).TotalSeconds}|" +
+                                                        $"{Id}";
     }
 }

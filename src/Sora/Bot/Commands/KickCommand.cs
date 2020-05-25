@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Sora.Framework;
-using Sora.Framework.Objects;
+using Presence = Sora.Objects.Presence;
 
 namespace Sora.Bot.Commands
 {

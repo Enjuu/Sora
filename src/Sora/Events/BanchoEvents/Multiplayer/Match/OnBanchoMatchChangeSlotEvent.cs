@@ -14,7 +14,7 @@ namespace Sora.Events.BanchoEvents.Multiplayer.Match
             if (match == null ||
                 args.SlotId > 16)
                 return;
-            
+
             var newSlot = match.Slots[args.SlotId];
             if (newSlot.UserId != -1)
                 return;

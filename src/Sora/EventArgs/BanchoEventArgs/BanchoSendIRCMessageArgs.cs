@@ -1,5 +1,5 @@
-using Sora.Framework.Objects;
-using Sora.Framework.Packets.Server;
+using MessageStruct = Sora.Packets.Server.MessageStruct;
+using Presence = Sora.Objects.Presence;
 
 namespace Sora.EventArgs.BanchoEventArgs
 {

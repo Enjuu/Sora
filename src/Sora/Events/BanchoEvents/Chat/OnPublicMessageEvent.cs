@@ -1,11 +1,13 @@
 using Sora.Attributes;
 using Sora.Enums;
 using Sora.EventArgs.BanchoEventArgs;
-using Sora.Framework.Objects;
-using Sora.Framework.Packets.Server;
-using Sora.Framework.Utilities;
 using Sora.Services;
 using Sora.Utilities;
+using Channel = Sora.Objects.Channel;
+using ChannelRevoked = Sora.Packets.Server.ChannelRevoked;
+using LCol = Sora.Utilities.LCol;
+using Logger = Sora.Utilities.Logger;
+using SendIrcMessage = Sora.Packets.Server.SendIrcMessage;
 
 namespace Sora.Events.BanchoEvents.Chat
 {
@@ -25,7 +27,7 @@ namespace Sora.Events.BanchoEvents.Chat
         public void OnPublicMessage(BanchoSendIrcMessageArgs args)
         {
             Channel channel;
-            
+
             switch (args.Message.ChannelTarget)
             {
                 case "#spectator":

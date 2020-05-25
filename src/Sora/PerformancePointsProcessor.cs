@@ -23,7 +23,7 @@ using osu.Game.Scoring.Legacy;
 using osu.Game.Users;
 using SharpCompress.Compressors.LZMA;
 using Sora.Database.Models;
-using Sora.Framework.Enums;
+using PlayMode = Sora.Enums.PlayMode;
 
 namespace Sora
 {
@@ -38,7 +38,7 @@ namespace Sora
                 PlayMode.Taiko => new CatchRuleset(),
                 PlayMode.Ctb => new TaikoRuleset(),
                 PlayMode.Mania => new ManiaRuleset(),
-                _ => new OsuRuleset()
+                _ => new OsuRuleset(),
             };
         }
     }
@@ -63,7 +63,7 @@ namespace Sora
                 PlayMode.Taiko => new CatchRuleset().RulesetInfo,
                 PlayMode.Ctb => new TaikoRuleset().RulesetInfo,
                 PlayMode.Mania => new ManiaRuleset().RulesetInfo,
-                _ => new OsuRuleset().RulesetInfo
+                _ => new OsuRuleset().RulesetInfo,
             };
 
             if (beatmapId.HasValue)
@@ -81,10 +81,7 @@ namespace Sora
         protected override IBeatmap GetBeatmap() => _beatmap;
 
         protected override Texture GetBackground() => null;
-        protected override VideoSprite GetVideo()
-        {
-            throw new NotImplementedException();
-        }
+        protected override VideoSprite GetVideo() => throw new NotImplementedException();
 
         protected override Track GetTrack() => null;
     }
@@ -151,7 +148,9 @@ namespace Sora
 
         public Score Parse(DbScore dbScore, string replayPath = null)
         {
-            using var rawReplay = replayPath == null ? File.OpenRead("data/replays/" + dbScore.ReplayMd5) : File.OpenRead(replayPath);
+            using var rawReplay = replayPath == null
+                ? File.OpenRead("data/replays/" + dbScore.ReplayMd5)
+                : File.OpenRead(replayPath);
 
             var properties = new byte[5];
             if (rawReplay.Read(properties, 0, 5) != 5)
@@ -186,7 +185,7 @@ namespace Sora
                     Files = null,
                     Hash = null,
                     Mods = LegacyHelper.Convert(dbScore.PlayMode).ConvertLegacyMods((LegacyMods) dbScore.Mods)
-                                       .ToArray(),
+                        .ToArray(),
                     Ruleset = LegacyHelper.Convert(dbScore.PlayMode).RulesetInfo,
                     Passed = true,
                     TotalScore = dbScore.TotalScore,
@@ -198,10 +197,10 @@ namespace Sora
                         [HitResult.Meh] = dbScore.Count50,
                         [HitResult.Miss] = dbScore.CountMiss,
                         [HitResult.Ok] = dbScore.CountKatu,
-                        [HitResult.None] = 0
-                    }
+                        [HitResult.None] = 0,
+                    },
                 },
-                Replay = new Replay()
+                Replay = new Replay(),
             };
 
             using (var lzma = new LzmaStream(properties, rawReplay, compressedSize, outSize))
@@ -231,18 +230,18 @@ namespace Sora
         /// <returns>Performance Points</returns>
         public static double Compute(DbScore dbScore, string replayPath = null, string beatmapPath = null)
         {
-            var workingBeatmap = beatmapPath == null ?
-                new ProcessorWorkingBeatmap("data/beatmaps/" + dbScore.FileMd5) :
-                new ProcessorWorkingBeatmap(beatmapPath);
-            
+            var workingBeatmap = beatmapPath == null
+                ? new ProcessorWorkingBeatmap("data/beatmaps/" + dbScore.FileMd5)
+                : new ProcessorWorkingBeatmap(beatmapPath);
+
             var psp = new ProcessorScoreParser(workingBeatmap);
             var score = psp.Parse(dbScore, replayPath);
 
             var categoryAttribs = new Dictionary<string, double>();
             var pp = score.ScoreInfo.Ruleset
-                          .CreateInstance()
-                          .CreatePerformanceCalculator(workingBeatmap, score.ScoreInfo)
-                          .Calculate(categoryAttribs);
+                .CreateInstance()
+                .CreatePerformanceCalculator(workingBeatmap, score.ScoreInfo)
+                .Calculate(categoryAttribs);
 
             return pp;
         }

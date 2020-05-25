@@ -2,7 +2,7 @@ using System;
 using Sora.Attributes;
 using Sora.Enums;
 using Sora.EventArgs.BanchoEventArgs;
-using Sora.Framework.Enums;
+using MultiSlotTeam = Sora.Enums.MultiSlotTeam;
 
 namespace Sora.Events.BanchoEvents.Multiplayer.Match
 {
@@ -20,8 +20,8 @@ namespace Sora.Events.BanchoEvents.Multiplayer.Match
             {
                 MultiSlotTeam.Blue => MultiSlotTeam.Red,
                 MultiSlotTeam.Red => MultiSlotTeam.Blue,
-                MultiSlotTeam.NoTeam => (new Random().Next(1) == 1 ? MultiSlotTeam.Red : MultiSlotTeam.Blue),
-                _ => MultiSlotTeam.NoTeam
+                MultiSlotTeam.NoTeam => new Random().Next(1) == 1 ? MultiSlotTeam.Red : MultiSlotTeam.Blue,
+                _ => MultiSlotTeam.NoTeam,
             };
 
             args.Pr.ActiveMatch.Update();

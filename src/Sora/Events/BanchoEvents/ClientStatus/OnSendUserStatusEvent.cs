@@ -4,9 +4,9 @@ using Sora.Database;
 using Sora.Database.Models;
 using Sora.Enums;
 using Sora.EventArgs.BanchoEventArgs;
-using Sora.Framework.Enums;
-using Sora.Framework.Packets.Server;
 using Sora.Services;
+using HandleUpdate = Sora.Packets.Server.HandleUpdate;
+using PlayMode = Sora.Enums.PlayMode;
 
 namespace Sora.Events.BanchoEvents.ClientStatus
 {
@@ -61,6 +61,7 @@ namespace Sora.Events.BanchoEvents.ClientStatus
                         throw new ArgumentOutOfRangeException();
                 }
             }
+
             args.Pr.Status = args.Status;
             _ps.Push(new HandleUpdate(args.Pr));
         }

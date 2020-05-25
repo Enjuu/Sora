@@ -1,9 +1,11 @@
 using Sora.Attributes;
 using Sora.Enums;
 using Sora.EventArgs.BanchoEventArgs;
-using Sora.Framework.Objects;
-using Sora.Framework.Packets.Server;
 using Sora.Services;
+using Channel = Sora.Objects.Channel;
+using ChannelAvailable = Sora.Packets.Server.ChannelAvailable;
+using ChannelJoinSuccess = Sora.Packets.Server.ChannelJoinSuccess;
+using ChannelRevoked = Sora.Packets.Server.ChannelRevoked;
 
 namespace Sora.Events.BanchoEvents.Chat
 {
@@ -39,9 +41,9 @@ namespace Sora.Events.BanchoEvents.Chat
 
             channel.Leave(args.Pr);
             channel.Join(args.Pr);
-            
+
             args.Pr.Push(new ChannelJoinSuccess(channel));
-            
+
             channel.Push(new ChannelAvailable(channel));
         }
     }

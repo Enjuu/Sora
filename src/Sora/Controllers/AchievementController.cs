@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Sora.Database;
 using Sora.Database.Models;
-using Sora.Framework.Allocation;
+using Cache = Sora.Allocation.Cache;
 
 namespace Sora.Controllers
 {
@@ -30,8 +30,8 @@ namespace Sora.Controllers
                 return File(res, "image/png");
 
             res = (await DbAchievement
-                  .GetAchievement(_ctx, achievement.Replace(".png", string.Empty))
-                  )?.GetIconImage();
+                    .GetAchievement(_ctx, achievement.Replace(".png", string.Empty))
+                )?.GetIconImage();
 
             if (res == null)
                 return NotFound();

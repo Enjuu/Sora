@@ -1,8 +1,8 @@
 using Sora.Attributes;
 using Sora.Enums;
 using Sora.EventArgs.BanchoEventArgs;
-using Sora.Framework.Packets.Server;
 using Sora.Services;
+using ChannelJoinSuccess = Sora.Packets.Server.ChannelJoinSuccess;
 
 namespace Sora.Events.BanchoEvents.Spectator
 {
@@ -18,10 +18,10 @@ namespace Sora.Events.BanchoEvents.Spectator
         {
             if (!_ps.TryGet(args.SpectatorHostId, out var opr))
                 return;
-            
+
             if (opr.Spectator == null)
             {
-                opr.Spectator = new Framework.Objects.Spectator(opr);
+                opr.Spectator = new Objects.Spectator(opr);
                 opr.Spectator.Join(opr);
                 opr.Push(new ChannelJoinSuccess(opr.Spectator.Channel));
             }

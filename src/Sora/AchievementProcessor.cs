@@ -3,15 +3,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using Sora.Database;
 using Sora.Database.Models;
-using Sora.Framework.Objects;
-using Sora.Framework.Objects.Scores;
-using Sora.Framework.Utilities;
+using Achievement = Sora.Objects.Achievement;
+using Beatmap = Sora.Utilities.Beatmap;
+using BeatmapSet = Sora.Utilities.BeatmapSet;
 
 namespace Sora
 {
     public static class AchievementProcessor
     {
-        
         /// <summary>
         /// Create Default Achievements
         /// </summary>
@@ -41,12 +40,12 @@ namespace Sora
         /// <returns>Obtained Achievements</returns>
         public static string ProcessAchievements(SoraDbContext ctx,
             DbUser user,
-            Score score,
+            DbScore score,
             Beatmap map,
             BeatmapSet set,
             DbLeaderboard oldLb,
             DbLeaderboard newLb
-            )
+        )
         {
             var l = new List<Achievement>();
 

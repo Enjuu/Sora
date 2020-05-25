@@ -9,7 +9,7 @@ namespace Sora
         /// Enable Plugin
         /// </summary>
         void OnEnable(IApplicationBuilder app);
-        
+
         /// <summary>
         /// Disable Plugin
         /// </summary>

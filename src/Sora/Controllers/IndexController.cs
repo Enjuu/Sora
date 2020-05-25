@@ -5,10 +5,13 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Sora.Enums;
 using Sora.EventArgs.BanchoEventArgs;
-using Sora.Framework.Enums;
-using Sora.Framework.Objects;
-using Sora.Framework.Utilities;
 using Sora.Services;
+using Logger = Sora.Utilities.Logger;
+using MStreamReader = Sora.Utilities.MStreamReader;
+using MStreamWriter = Sora.Utilities.MStreamWriter;
+using PacketId = Sora.Enums.PacketId;
+using Presence = Sora.Objects.Presence;
+using Token = Sora.Objects.Token;
 
 namespace Sora.Controllers
 {
@@ -38,7 +41,7 @@ namespace Sora.Controllers
 
             return File(m, "application/octet-stream");
         }
-        
+
         [AllowAnonymous]
         [HttpPost]
         public async Task<IActionResult> IndexPost([FromHeader(Name = "osu-token")] string clientToken = null)
@@ -58,7 +61,7 @@ namespace Sora.Controllers
 
                 await using var mw = MStreamWriter.New();
                 using var mr = new MStreamReader(body);
-                var pr = new Presence(new User());
+                var pr = new Presence();
                 if (string.IsNullOrEmpty(clientToken))
                 {
                     Response.Headers["cho-token"] = pr.Token.ToString();
@@ -72,7 +75,7 @@ namespace Sora.Controllers
                         Reader = mr,
                         Writer = mw,
                         Pr = pr,
-                        IpAddress = ip
+                        IpAddress = ip,
                     });
 
                     mw.Flush();
@@ -86,7 +89,7 @@ namespace Sora.Controllers
                         try
                         {
                             pr["LAST_PONG"] = DateTime.Now;
-                            
+
                             if (Request.ContentLength - body.Position < 7)
                                 break; // Dont handle any invalid packets! (less then bytelength of 7)
 
@@ -106,12 +109,13 @@ namespace Sora.Controllers
                             Logger.Err(ex);
                             break;
                         }
+
                     try
                     {
                         await using var m = new MemoryStream();
                         if (Response.Body.CanWrite)
                             pr.WritePackets(m);
-                                
+
                         return await RetOut(m);
                     }
                     catch (Exception ex)
@@ -121,7 +125,9 @@ namespace Sora.Controllers
                     }
                 }
                 else
+                {
                     return StatusCode(403);
+                }
             }
             catch (Exception ex)
             {

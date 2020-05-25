@@ -5,9 +5,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Sora.Enums;
 using Sora.EventArgs.BanchoEventArgs;
-using Sora.Framework;
-using Sora.Framework.Enums;
-using Sora.Framework.Objects;
+using ErrorStates = Sora.Enums.ErrorStates;
+using Presence = Sora.Objects.Presence;
 
 namespace Sora.Services
 {
@@ -15,13 +14,10 @@ namespace Sora.Services
     {
         private readonly EventManager _ev;
 
-        public PresenceService(EventManager ev)
-        {
-            _ev = ev;
-        }
+        public PresenceService(EventManager ev) => _ev = ev;
 
         public int ConnectedPresences => Values.Count;
-        
+
         public IEnumerable<int> GetUserIds(Presence pr = null)
         {
             try
@@ -47,10 +43,11 @@ namespace Sora.Services
                     {
                         RWL.AcquireReaderLock(1000);
 
-                        foreach (var pr in Values.Select(presenceK => presenceK.Value).Where(pr => pr["BOT"] == null || !(bool) pr["BOT"]))
+                        foreach (var pr in Values.Select(presenceK => presenceK.Value)
+                            .Where(pr => pr["BOT"] == null || !(bool) pr["BOT"]))
                         {
                             pr["LAST_PONG"] ??= DateTime.Now;
-                            
+
                             var lastPong = (DateTime) pr["LAST_PONG"];
                             if (lastPong < DateTime.Now - TimeSpan.FromSeconds(60))
                                 toRemove.Add(pr);
@@ -62,14 +59,12 @@ namespace Sora.Services
                     }
 
                     foreach (var removableValue in toRemove)
-                    {
                         _ev?.RunEvent(EventType.BanchoExit, new BanchoExitArgs
                         {
                             Pr = removableValue,
-                            Err = ErrorStates.Ok
+                            Err = ErrorStates.Ok,
                         });
-                    }
-                    
+
                     Thread.Sleep(1000);
                 }
             });

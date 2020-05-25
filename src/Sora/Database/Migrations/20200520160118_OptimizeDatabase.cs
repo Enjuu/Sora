@@ -7,79 +7,79 @@ namespace Sora.Database.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AlterColumn<string>(
-                name: "UserName",
-                table: "Users",
-                type: "varchar(32)",
+                "UserName",
+                "Users",
+                "varchar(32)",
                 nullable: false,
                 oldClrType: typeof(string),
                 oldType: "longtext CHARACTER SET utf8mb4");
 
             migrationBuilder.AlterColumn<string>(
-                name: "EMail",
-                table: "Users",
-                type: "varchar(64)",
+                "EMail",
+                "Users",
+                "varchar(64)",
                 nullable: false,
                 oldClrType: typeof(string),
                 oldType: "longtext CHARACTER SET utf8mb4");
 
             migrationBuilder.AlterColumn<string>(
-                name: "ReplayMd5",
-                table: "Scores",
-                type: "varchar(32)",
+                "ReplayMd5",
+                "Scores",
+                "varchar(32)",
                 nullable: true,
                 oldClrType: typeof(string),
                 oldType: "longtext CHARACTER SET utf8mb4",
                 oldNullable: true);
 
             migrationBuilder.AlterColumn<string>(
-                name: "FileMd5",
-                table: "Scores",
-                type: "varchar(32)",
+                "FileMd5",
+                "Scores",
+                "varchar(32)",
                 nullable: true,
                 oldClrType: typeof(string),
                 oldType: "longtext CHARACTER SET utf8mb4",
                 oldNullable: true);
 
             migrationBuilder.AlterColumn<string>(
-                name: "Title",
-                table: "Beatmaps",
-                type: "varchar(255)",
+                "Title",
+                "Beatmaps",
+                "varchar(255)",
                 nullable: false,
                 oldClrType: typeof(string),
                 oldType: "longtext CHARACTER SET utf8mb4");
 
             migrationBuilder.AlterColumn<string>(
-                name: "FileName",
-                table: "Beatmaps",
-                type: "varchar(255)",
+                "FileName",
+                "Beatmaps",
+                "varchar(255)",
                 nullable: false,
                 oldClrType: typeof(string),
                 oldType: "longtext CHARACTER SET utf8mb4");
 
             migrationBuilder.AlterColumn<string>(
-                name: "FileMd5",
-                table: "Beatmaps",
-                type: "varchar(32)",
+                "FileMd5",
+                "Beatmaps",
+                "varchar(32)",
                 nullable: false,
                 oldClrType: typeof(string),
                 oldType: "longtext CHARACTER SET utf8mb4");
 
             migrationBuilder.AlterColumn<string>(
-                name: "DiffName",
-                table: "Beatmaps",
-                type: "varchar(255)",
+                "DiffName",
+                "Beatmaps",
+                "varchar(255)",
                 nullable: false,
                 oldClrType: typeof(string),
                 oldType: "longtext CHARACTER SET utf8mb4");
 
             migrationBuilder.AlterColumn<string>(
-                name: "Artist",
-                table: "Beatmaps",
-                type: "varchar(255)",
+                "Artist",
+                "Beatmaps",
+                "varchar(255)",
                 nullable: false,
                 oldClrType: typeof(string),
                 oldType: "longtext CHARACTER SET utf8mb4");
-            
+
             migrationBuilder.CreateIndex("IX_Beatmaps_SetId", "Beatmaps", "SetId", unique: false);
             migrationBuilder.CreateIndex("IX_Beatmaps_FileMd5", "Beatmaps", "FileMd5", unique: true);
             migrationBuilder.CreateIndex("IX_Beatmaps_RankedStatus", "Beatmaps", "RankedStatus", unique: false);
@@ -96,66 +96,66 @@ namespace Sora.Database.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AlterColumn<string>(
-                name: "UserName",
-                table: "Users",
-                type: "longtext CHARACTER SET utf8mb4",
+                "UserName",
+                "Users",
+                "longtext CHARACTER SET utf8mb4",
                 nullable: false,
                 oldClrType: typeof(string),
                 oldType: "varchar(32)");
 
             migrationBuilder.AlterColumn<string>(
-                name: "EMail",
-                table: "Users",
-                type: "longtext CHARACTER SET utf8mb4",
+                "EMail",
+                "Users",
+                "longtext CHARACTER SET utf8mb4",
                 nullable: false,
                 oldClrType: typeof(string),
                 oldType: "varchar(64)");
 
             migrationBuilder.AlterColumn<string>(
-                name: "ReplayMd5",
-                table: "Scores",
-                type: "longtext CHARACTER SET utf8mb4",
+                "ReplayMd5",
+                "Scores",
+                "longtext CHARACTER SET utf8mb4",
                 nullable: true,
                 oldClrType: typeof(string),
                 oldType: "varchar(32)",
                 oldNullable: true);
 
             migrationBuilder.AlterColumn<string>(
-                name: "Title",
-                table: "Beatmaps",
-                type: "longtext CHARACTER SET utf8mb4",
+                "Title",
+                "Beatmaps",
+                "longtext CHARACTER SET utf8mb4",
                 nullable: false,
                 oldClrType: typeof(string),
                 oldType: "varchar(255)");
 
             migrationBuilder.AlterColumn<string>(
-                name: "FileName",
-                table: "Beatmaps",
-                type: "longtext CHARACTER SET utf8mb4",
+                "FileName",
+                "Beatmaps",
+                "longtext CHARACTER SET utf8mb4",
                 nullable: false,
                 oldClrType: typeof(string),
                 oldType: "varchar(255)");
 
             migrationBuilder.AlterColumn<string>(
-                name: "FileMd5",
-                table: "Beatmaps",
-                type: "longtext CHARACTER SET utf8mb4",
+                "FileMd5",
+                "Beatmaps",
+                "longtext CHARACTER SET utf8mb4",
                 nullable: false,
                 oldClrType: typeof(string),
                 oldType: "varchar(32)");
 
             migrationBuilder.AlterColumn<string>(
-                name: "DiffName",
-                table: "Beatmaps",
-                type: "longtext CHARACTER SET utf8mb4",
+                "DiffName",
+                "Beatmaps",
+                "longtext CHARACTER SET utf8mb4",
                 nullable: false,
                 oldClrType: typeof(string),
                 oldType: "varchar(255)");
 
             migrationBuilder.AlterColumn<string>(
-                name: "Artist",
-                table: "Beatmaps",
-                type: "longtext CHARACTER SET utf8mb4",
+                "Artist",
+                "Beatmaps",
+                "longtext CHARACTER SET utf8mb4",
                 nullable: false,
                 oldClrType: typeof(string),
                 oldType: "varchar(255)");

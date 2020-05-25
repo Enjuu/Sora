@@ -1,6 +1,6 @@
-using Sora.Framework.Enums;
-using Sora.Framework.Objects;
-using Sora.Framework.Utilities;
+using MStreamReader = Sora.Utilities.MStreamReader;
+using PacketId = Sora.Enums.PacketId;
+using Presence = Sora.Objects.Presence;
 
 namespace Sora.EventArgs.BanchoEventArgs
 {

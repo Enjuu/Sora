@@ -1,0 +1,25 @@
+using Sora.Enums;
+
+namespace Sora.Utilities
+{
+    public static class RankedMods
+    {
+        public static bool IsRanked(Mod mods)
+        {
+            var r = (mods & Mod.Relax) == 0;
+
+            if ((mods & Mod.Relax2) != 0)
+                r = false;
+            if ((mods & Mod.Cinema) != 0)
+                r = false;
+            if ((mods & Mod.Autoplay) != 0)
+                r = false;
+            if ((mods & Mod.TargetPractice) != 0)
+                r = false;
+            if ((mods & Mod.HardRock) != 0 && (mods & Mod.Easy) != 0)
+                r = false;
+
+            return r;
+        }
+    }
+}

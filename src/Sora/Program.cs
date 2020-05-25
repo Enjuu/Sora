@@ -6,7 +6,12 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Sora.Framework.Utilities;
+using ConfigUtil = Sora.Utilities.ConfigUtil;
+using CPisstaube = Sora.Utilities.CPisstaube;
+using Crypto = Sora.Utilities.Crypto;
+using Logger = Sora.Utilities.Logger;
+using SoraLoggerConfiguration = Sora.Utilities.SoraLoggerConfiguration;
+using SoraLoggerProvider = Sora.Utilities.SoraLoggerProvider;
 
 namespace Sora
 {
@@ -18,7 +23,7 @@ namespace Sora
         private static async Task Main(string[] args)
         {
             Console.CancelKeyPress += OnProcessExit;
-            
+
             var defaultConfig = new Config
             {
                 MySql = new CMySql
@@ -36,47 +41,47 @@ namespace Sora
                     IrcPort = 6667,
 
                     ScreenShotHostname = "localhost",
-                    FreeDirect = true
+                    FreeDirect = true,
                 },
                 Pisstaube = new CPisstaube
                 {
-                    URI = "https://pisstau.be"
+                    URI = "https://pisstau.be",
                 },
-                Esc = Convert.ToBase64String(Crypto.SCrypt.generate_salt())
+                Esc = Convert.ToBase64String(Crypto.SCrypt.generate_salt()),
             };
-            
+
             if (!ConfigUtil.TryReadConfig(out var scfg, "config.json", defaultConfig))
                 Environment.Exit(0);
-            
+
             host = Host.CreateDefaultBuilder(args)
-                            .ConfigureWebHostDefaults(builder =>
-                            {
-                                builder.UseKestrel(cfg =>
-                                {
-                                    cfg.Limits.MaxRequestBodySize = null;
+                .ConfigureWebHostDefaults(builder =>
+                {
+                    builder.UseKestrel(cfg =>
+                    {
+                        cfg.Limits.MaxRequestBodySize = null;
 
-                                    if (!IPAddress.TryParse(scfg.Server.Hostname, out var ipAddress))
-                                        ipAddress = Dns.GetHostEntry(scfg.Server.Hostname).AddressList[0];
-                                    cfg.ConfigureEndpointDefaults(cfgEndPoints =>
-                                        {
-                                            cfgEndPoints.Protocols = HttpProtocols.Http1AndHttp2;
-                                        });
-                                    
-                                    cfg.Listen(IPAddress.Loopback, 5001,
-                                        listenOptions => { listenOptions.UseHttps(); });
-                                    cfg.Listen(ipAddress, scfg.Server.Port);
-                                });
+                        if (!IPAddress.TryParse(scfg.Server.Hostname, out var ipAddress))
+                            ipAddress = Dns.GetHostEntry(scfg.Server.Hostname).AddressList[0];
+                        cfg.ConfigureEndpointDefaults(cfgEndPoints =>
+                        {
+                            cfgEndPoints.Protocols = HttpProtocols.Http1AndHttp2;
+                        });
 
-                                builder.UseStartup<StartUp>();
-                            })
-                            .ConfigureLogging(logging =>
-                            {
-                                logging.ClearProviders();
-                                logging.AddProvider(new SoraLoggerProvider(new SoraLoggerConfiguration
-                                {
-                                    LogLevel = LogLevel.Trace
-                                }));
-                            }).Build();
+                        cfg.Listen(IPAddress.Loopback, 5001,
+                            listenOptions => { listenOptions.UseHttps(); });
+                        cfg.Listen(ipAddress, scfg.Server.Port);
+                    });
+
+                    builder.UseStartup<StartUp>();
+                })
+                .ConfigureLogging(logging =>
+                {
+                    logging.ClearProviders();
+                    logging.AddProvider(new SoraLoggerProvider(new SoraLoggerConfiguration
+                    {
+                        LogLevel = LogLevel.Trace,
+                    }));
+                }).Build();
 
             await host.RunAsync(Cts.Token);
             await host.StopAsync(Cts.Token);

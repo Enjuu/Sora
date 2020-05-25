@@ -61,7 +61,7 @@ namespace Sora.Enums
 
         #region Other
 
-        AntiCheat
+        AntiCheat,
 
         #endregion
     }

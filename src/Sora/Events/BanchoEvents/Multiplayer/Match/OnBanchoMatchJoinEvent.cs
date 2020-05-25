@@ -1,8 +1,9 @@
 using Sora.Attributes;
 using Sora.Enums;
 using Sora.EventArgs.BanchoEventArgs;
-using Sora.Framework.Objects.Multiplayer;
-using Sora.Framework.Packets.Server;
+using Lobby = Sora.Objects.Multiplayer.Lobby;
+using MatchJoinFail = Sora.Packets.Server.MatchJoinFail;
+using MatchJoinSuccess = Sora.Packets.Server.MatchJoinSuccess;
 
 namespace Sora.Events.BanchoEvents.Multiplayer.Match
 {
@@ -11,10 +12,7 @@ namespace Sora.Events.BanchoEvents.Multiplayer.Match
     {
         private readonly EventManager _ev;
 
-        public OnBanchoMatchJoinEvent(EventManager ev)
-        {
-            _ev = ev;
-        }
+        public OnBanchoMatchJoinEvent(EventManager ev) => _ev = ev;
 
         [Event(EventType.BanchoMatchJoin)]
         public async void OnBanchoMatchJoin(BanchoMatchJoinArgs args)

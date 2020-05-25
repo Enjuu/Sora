@@ -7,7 +7,7 @@ using System.Runtime.Loader;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.Extensions.Logging;
-using Sora.Framework.Utilities;
+using Logger = Sora.Utilities.Logger;
 
 namespace Sora.Services
 {
@@ -46,19 +46,20 @@ namespace Sora.Services
                 using var strm = File.OpenRead(filename); // Load from stream instead, allow us to live reload.
                 var asm = _context.LoadFromStream(strm);
                 if (asm == null) return false;
-                
+
                 _loadedPlugins.Add(filename, asm);
                 _ev.LoadAssembly(asm);
                 _logger.LogInformation("Loaded new Assembly {asm}", asm);
 
                 // Register ASP.NET Core Controllers
                 _appPartManager.ApplicationParts.Add(new AssemblyPart(asm));
-                
+
                 if (!isDep)
                     GetEntryPoint(asm)?.OnEnable(app);
-                
+
                 return true;
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 Logger.Err(ex);
                 return false;
@@ -71,11 +72,11 @@ namespace Sora.Services
                 return _entryPoints[asm];
 
             var iplug = asm.GetTypes()
-                           .FirstOrDefault(
-                               x => x.IsClass &&
-                                    (x.BaseType == typeof(IPlugin) ||
-                                     x.BaseType == typeof(Plugin))
-                           );
+                .FirstOrDefault(
+                    x => x.IsClass &&
+                         (x.BaseType == typeof(IPlugin) ||
+                          x.BaseType == typeof(Plugin))
+                );
 
             if (iplug == null)
             {
@@ -85,8 +86,8 @@ namespace Sora.Services
             }
 
             var tArgs = (from cInfo in iplug.GetConstructors()
-                         from pInfo in cInfo.GetParameters()
-                         select _ev.Provider.GetService(pInfo.ParameterType)).ToArray();
+                from pInfo in cInfo.GetParameters()
+                select _ev.Provider.GetService(pInfo.ParameterType)).ToArray();
 
             if (tArgs.Any(x => x == null))
                 throw new Exception("Could not find Dependency, are you sure you registered the Dependency?");
@@ -104,7 +105,8 @@ namespace Sora.Services
             {
                 _context.Unload();
                 return true;
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 Logger.Err(ex);
                 return false;

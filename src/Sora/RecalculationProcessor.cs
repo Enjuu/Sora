@@ -3,7 +3,7 @@ using System.IO;
 using System.Linq;
 using osu.Framework.Extensions.IEnumerableExtensions;
 using Sora.Database;
-using Sora.Framework.Utilities;
+using Logger = Sora.Utilities.Logger;
 
 namespace Sora
 {
@@ -16,8 +16,8 @@ namespace Sora
         public void ProcessAccuracyRecalculation()
         {
             var scores = _ctx.Users
-                            .Select(user => _ctx.Scores.Where(s => s.UserId == user.Id))
-                            .SelectMany(sc => sc);
+                .Select(user => _ctx.Scores.Where(s => s.UserId == user.Id))
+                .SelectMany(sc => sc);
 
             var i = 0;
             var sCount = scores.Count();
@@ -28,15 +28,15 @@ namespace Sora
                     i++;
                     s.Accuracy = s.ComputeAccuracy();
                     if (i % 10000 == 0)
-                        Logger.Info($"Score Id: {s.Id} | {i} of {sCount} {(double)i/(double)sCount:P}");
+                        Logger.Info($"Score Id: {s.Id} | {i} of {sCount} {(double) i / (double) sCount:P}");
                 });
         }
 
         public void ProcessPerformanceRecalculation()
         {
             var scores = _ctx.Users
-                             .Select(user => _ctx.Scores.Where(s => s.UserId == user.Id))
-                             .SelectMany(s => s);
+                .Select(user => _ctx.Scores.Where(s => s.UserId == user.Id))
+                .SelectMany(s => s);
 
             var i = 0;
             var sCount = scores.Count();
@@ -56,17 +56,19 @@ namespace Sora
                         s.PerformancePoints = 0;
                         return;
                     }
-                    
+
                     try
                     {
                         s.PerformancePoints = s.ComputePerformancePoints();
-                    } catch (Exception)
+                    }
+                    catch (Exception)
                     {
                         // ignored
                     }
-                    
+
                     if (i % 100 == 0)
-                        Logger.Info($"Score Id: {s.Id} Performance Points: {s.PerformancePoints:F} Mode {s.PlayMode} +{s.Mods} | {i} of {sCount} {(double) i / (double) sCount:P}");
+                        Logger.Info(
+                            $"Score Id: {s.Id} Performance Points: {s.PerformancePoints:F} Mode {s.PlayMode} +{s.Mods} | {i} of {sCount} {(double) i / (double) sCount:P}");
                 }
             );
         }

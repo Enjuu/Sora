@@ -13,7 +13,7 @@ namespace Sora.Events.BanchoEvents.Multiplayer.Match
             if (args.Pr.ActiveMatch == null ||
                 args.Pr.ActiveMatch.HostId != args.Pr.User.Id)
                 return;
-            
+
             if (args.SlotId > 16)
                 return;
 

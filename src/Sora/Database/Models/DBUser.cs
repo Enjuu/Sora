@@ -5,9 +5,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using Sora.Framework;
-using Sora.Framework.Objects;
-using Sora.Framework.Utilities;
+using Crypto = Sora.Utilities.Crypto;
+using Hex = Sora.Utilities.Hex;
 
 #nullable enable
 
@@ -17,18 +16,18 @@ namespace Sora.Database.Models
     {
         V0, // Md5 (never use this!)
         V1, // Md5 + BCrypt
-        V2  // Md5 + SCrypt
+        V2, // Md5 + SCrypt
     }
 
     public enum UserStatusFlags
     {
         None = 0,
-        Suspended = 1<<1, /* Disallow Login with a Reason! */
-        Restricted = 1<<2,
-        Silenced = 1<<3,
-        Donator = 1<<4
+        Suspended = 1 << 1, /* Disallow Login with a Reason! */
+        Restricted = 1 << 2,
+        Silenced = 1 << 3,
+        Donator = 1 << 4,
     }
-    
+
     [Table("Users")]
     public class DbUser
     {
@@ -47,20 +46,30 @@ namespace Sora.Database.Models
 
         [Required]
         public string Password { get; set; }
-        
+
         public byte[]? PasswordSalt { get; set; }
-        
+
         [Required]
         public PasswordVersion PasswordVersion { get; set; }
-        
+
         [Required]
-        public string Permissions { get; set; }
-        
+        [Column("Permissions")]
+        public string DbPermissions { get; set; }
+
+        [Required]
+        [NotMapped]
+        public Permission Permissions
+        {
+            get => Permission.From(DbPermissions);
+            set => DbPermissions = value.ToString();
+        }
+
         public string? Achievements { get; set; }
-        
+
         [Required]
         [DefaultValue(UserStatusFlags.None)]
         public UserStatusFlags Status { get; set; }
+
         public DateTime? StatusUntil { get; set; }
         public string? StatusReason { get; set; }
 
@@ -69,16 +78,9 @@ namespace Sora.Database.Models
 
         public static Task<DbUser?> GetDbUser(SoraDbContext ctx, string userName)
             => ctx.Users.FirstOrDefaultAsync(u => u.UserName == userName);
-        
-        public static Task<DbUser?> GetDbUser(SoraDbContext ctx, User user)
-            => GetDbUser(ctx, user.Id);
 
-        public User ToUser() => new User
-        {
-            Id = Id,
-            UserName = UserName,
-            Permissions = Permission.From(Permissions)
-        };
+        public static Task<DbUser?> GetDbUser(SoraDbContext ctx, DbUser user)
+            => GetDbUser(ctx, user.Id);
 
         public bool IsPassword(string passMd5)
         {
@@ -103,7 +105,7 @@ namespace Sora.Database.Models
         {
             if (ctx.Users.Any(u => string.Equals(u.UserName, userName, StringComparison.CurrentCultureIgnoreCase)))
                 return null;
-            
+
             byte[] salt = null;
             string pw;
             switch (pwVersion)
@@ -120,9 +122,10 @@ namespace Sora.Database.Models
                     (pw, salt) = Crypto.SCrypt.generate_hash(pw);
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(pwVersion), pwVersion, "PasswordVersion MUST be either v0,v1 or v2!");
+                    throw new ArgumentOutOfRangeException(nameof(pwVersion), pwVersion,
+                        "PasswordVersion MUST be either v0,v1 or v2!");
             }
-            
+
             var user = new DbUser
             {
                 UserName = userName,
@@ -130,15 +133,15 @@ namespace Sora.Database.Models
                 EMail = eMail,
                 PasswordSalt = salt,
                 PasswordVersion = pwVersion,
-                Permissions = permission.ToString()
+                Permissions = permission,
             };
 
             if (userId > 0)
                 user.Id = userId;
-            
+
             ctx.Add(user);
             await ctx.SaveChangesAsync();
-            
+
             return user;
         }
     }

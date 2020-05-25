@@ -1,5 +1,5 @@
-using Sora.Framework.Objects;
-using Sora.Framework.Packets.Client;
+using Presence = Sora.Objects.Presence;
+using ScoreFrame = Sora.Packets.Client.ScoreFrame;
 
 namespace Sora.EventArgs.BanchoEventArgs
 {

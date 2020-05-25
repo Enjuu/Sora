@@ -8,35 +8,35 @@ namespace Sora.Database.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<int>(
-                name: "Status",
-                table: "Users",
+                "Status",
+                "Users",
                 nullable: false,
                 defaultValue: 0);
 
             migrationBuilder.AddColumn<string>(
-                name: "StatusReason",
-                table: "Users",
+                "StatusReason",
+                "Users",
                 nullable: true);
 
             migrationBuilder.AddColumn<DateTime>(
-                name: "StatusUntil",
-                table: "Users",
+                "StatusUntil",
+                "Users",
                 nullable: true);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "Status",
-                table: "Users");
+                "Status",
+                "Users");
 
             migrationBuilder.DropColumn(
-                name: "StatusReason",
-                table: "Users");
+                "StatusReason",
+                "Users");
 
             migrationBuilder.DropColumn(
-                name: "StatusUntil",
-                table: "Users");
+                "StatusUntil",
+                "Users");
         }
     }
 }

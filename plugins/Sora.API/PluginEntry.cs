@@ -7,7 +7,7 @@ using FluentEmail.Mailgun;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Sora.Framework.Utilities;
+using Sora.Utilities;
 
 namespace Sora.API
 {

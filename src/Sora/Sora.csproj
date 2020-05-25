@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <OutputType>Exe</OutputType>
@@ -12,7 +12,15 @@
       <ProjectReference Include="..\..\osu\osu.Game.Rulesets.Osu\osu.Game.Rulesets.Osu.csproj" />
       <ProjectReference Include="..\..\osu\osu.Game.Rulesets.Taiko\osu.Game.Rulesets.Taiko.csproj" />
       <ProjectReference Include="..\..\osu\osu.Game\osu.Game.csproj" />
-      <ProjectReference Include="..\Sora.Framework\Sora.Framework.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Update="lib\*.dll">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <None Include="lib\*.so">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
     </ItemGroup>
 
     <ItemGroup>
@@ -35,10 +43,14 @@
       <PackageReference Include="NETStandard.Library" Version="2.0.3" />
       <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="3.1.1" />
       <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="3.1.4" />
-    </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="_runtime" />
+      <PackageReference Include="BouncyCastle.NetCore" Version="1.8.6" />
+      <PackageReference Include="Colorful.Console" Version="1.2.10" />
+      <PackageReference Include="Magick.NET-Q16-AnyCPU" Version="7.17.0.1" />
+      <PackageReference Include="MaxMind.GeoIP2" Version="3.2.0" />
+      <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="3.1.4" />
+      <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+      <PackageReference Include="SharpZipLib" Version="1.2.0" />
     </ItemGroup>
 
 </Project>

@@ -8,8 +8,8 @@ namespace Sora.Database.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Beatmaps",
-                columns: table => new
+                "Beatmaps",
+                table => new
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
@@ -21,18 +21,15 @@ namespace Sora.Database.Migrations
                     Title = table.Column<string>(nullable: false),
                     DiffName = table.Column<string>(nullable: false),
                     FileName = table.Column<string>(nullable: false),
-                    Flags = table.Column<int>(nullable: false)
+                    Flags = table.Column<int>(nullable: false),
                 },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Beatmaps", x => x.Id);
-                });
+                constraints: table => { table.PrimaryKey("PK_Beatmaps", x => x.Id); });
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Beatmaps");
+                "Beatmaps");
         }
     }
 }

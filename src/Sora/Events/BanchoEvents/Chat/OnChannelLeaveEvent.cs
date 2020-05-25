@@ -1,9 +1,10 @@
 using Sora.Attributes;
 using Sora.Enums;
 using Sora.EventArgs.BanchoEventArgs;
-using Sora.Framework.Objects;
-using Sora.Framework.Packets.Server;
 using Sora.Services;
+using Channel = Sora.Objects.Channel;
+using ChannelAvailable = Sora.Packets.Server.ChannelAvailable;
+using ChannelRevoked = Sora.Packets.Server.ChannelRevoked;
 
 namespace Sora.Events.BanchoEvents.Chat
 {

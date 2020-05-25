@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
-using Sora.Framework;
-using Sora.Framework.Objects;
+using Channel = Sora.Objects.Channel;
+using ChannelStatus = Sora.Objects.ChannelStatus;
 
 namespace Sora.Services
 {
@@ -11,22 +11,23 @@ namespace Sora.Services
         {
             Push("#osu", new Channel
             {
-                Name = "#osu", Status = ChannelStatus.AutoJoin, Topic = "osu! default channel."
+                Name = "#osu", Status = ChannelStatus.AutoJoin, Topic = "osu! default channel.",
             });
 
             Push("#lobby", new Channel
             {
-                Name = "#lobby", Topic = "osu! default channel for multiplayer matches."
+                Name = "#lobby", Topic = "osu! default channel for multiplayer matches.",
             });
 
 
             Push("#announce", new Channel
             {
-                Name = "#announce", Status = ChannelStatus.AutoJoin | ChannelStatus.ReadOnly, Topic = "osu! default channel for announcements."
+                Name = "#announce", Status = ChannelStatus.AutoJoin | ChannelStatus.ReadOnly,
+                Topic = "osu! default channel for announcements.",
             });
         }
-        
-        public IEnumerable<Channel> ChannelsAutoJoin 
+
+        public IEnumerable<Channel> ChannelsAutoJoin
         {
             get
             {

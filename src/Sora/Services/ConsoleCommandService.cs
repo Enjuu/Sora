@@ -5,8 +5,8 @@ using System.Threading;
 using Microsoft.EntityFrameworkCore.Internal;
 using Sora.Database;
 using Sora.Database.Models;
-using Sora.Framework;
-using Sora.Framework.Utilities;
+using LCol = Sora.Utilities.LCol;
+using Logger = Sora.Utilities.Logger;
 
 namespace Sora.Services
 {
@@ -102,20 +102,21 @@ namespace Sora.Services
                     new Argument {ArgName = "Username"},
                     new Argument {ArgName = "Password"},
                     new Argument {ArgName = "E-Mail"},
-                    new Argument {ArgName = "Permissions"}
+                    new Argument {ArgName = "Permissions"},
                 },
                 3,
                 args =>
                 {
                     var u = DbUser.RegisterUser(ctx, Permission.From(args[3..].Join()),
                         args[0], args[2], args[1], false).Result;
-                    
-                    if (u == null) {
+
+                    if (u == null)
+                    {
                         Logger.Err("Failed! User has already been registered!");
                         return true;
                     }
-                    
-                    
+
+
                     Logger.Info(args[1]);
                     Logger.Info(
                         "Created User",
@@ -143,7 +144,7 @@ namespace Sora.Services
                         Description = description,
                         Args = args,
                         ExpectedArgs = expectedArgs,
-                        Callback = cb
+                        Callback = cb,
                     }
                 );
             }
@@ -170,13 +171,16 @@ namespace Sora.Services
                     while (!_shouldStop)
                     {
                         ConsoleKeyInfo k;
-                        try {
+                        try
+                        {
                             k = Colorful.Console.ReadKey();
-                        } catch {
+                        }
+                        catch
+                        {
                             Stop();
                             return;
                         }
-                       
+
                         Colorful.Console.SetCursorPosition(0, Colorful.Console.CursorTop);
                         Console.Write(x);
 

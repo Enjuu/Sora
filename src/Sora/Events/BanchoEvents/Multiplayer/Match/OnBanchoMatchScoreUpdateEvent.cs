@@ -1,7 +1,7 @@
 using Sora.Attributes;
 using Sora.Enums;
 using Sora.EventArgs.BanchoEventArgs;
-using Sora.Framework.Packets.Server;
+using MatchScoreUpdate = Sora.Packets.Server.MatchScoreUpdate;
 
 namespace Sora.Events.BanchoEvents.Multiplayer.Match
 {

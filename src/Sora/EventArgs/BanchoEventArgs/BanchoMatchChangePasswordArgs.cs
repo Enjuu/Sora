@@ -1,5 +1,5 @@
-using Sora.Framework.Objects;
-using Sora.Framework.Objects.Multiplayer;
+using Match = Sora.Objects.Multiplayer.Match;
+using Presence = Sora.Objects.Presence;
 
 namespace Sora.EventArgs.BanchoEventArgs
 {

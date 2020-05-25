@@ -1,9 +1,10 @@
 using Sora.Attributes;
 using Sora.Enums;
 using Sora.EventArgs.BanchoEventArgs;
-using Sora.Framework.Packets.Server;
-using Sora.Framework.Utilities;
 using Sora.Services;
+using HandleUserQuit = Sora.Packets.Server.HandleUserQuit;
+using Logger = Sora.Utilities.Logger;
+using UserQuitStruct = Sora.Packets.Server.UserQuitStruct;
 
 namespace Sora.Events.BanchoEvents.ClientStatus
 {
@@ -11,11 +12,8 @@ namespace Sora.Events.BanchoEvents.ClientStatus
     public class OnBanchoExitEvent
     {
         private readonly PresenceService _ps;
-        
-        public OnBanchoExitEvent(PresenceService ps)
-        {
-            _ps = ps;
-        }
+
+        public OnBanchoExitEvent(PresenceService ps) => _ps = ps;
 
         [Event(EventType.BanchoExit)]
         public void OnBanchoExit(BanchoExitArgs args)
@@ -25,7 +23,7 @@ namespace Sora.Events.BanchoEvents.ClientStatus
                 "%#B342F4%(", args.Pr.User.Id, "%#B342F4%)",
                 "%#FFFFFF%has Disconnected!"
             );
-            
+
             args.Pr.Spectator?.Leave(args.Pr);
             args.Pr.ActiveMatch?.Leave(args.Pr);
 

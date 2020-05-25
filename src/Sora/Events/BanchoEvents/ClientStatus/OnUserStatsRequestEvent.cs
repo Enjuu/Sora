@@ -2,9 +2,11 @@ using System.Linq;
 using Sora.Attributes;
 using Sora.Enums;
 using Sora.EventArgs.BanchoEventArgs;
-using Sora.Framework.Enums;
-using Sora.Framework.Packets.Server;
 using Sora.Services;
+using ErrorStates = Sora.Enums.ErrorStates;
+using HandleUpdate = Sora.Packets.Server.HandleUpdate;
+using HandleUserQuit = Sora.Packets.Server.HandleUserQuit;
+using UserQuitStruct = Sora.Packets.Server.UserQuitStruct;
 
 namespace Sora.Events.BanchoEvents.ClientStatus
 {

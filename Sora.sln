@@ -23,8 +23,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "osu.Game.Rulesets.Osu", "os
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "osu.Game.Rulesets.Taiko", "osu\osu.Game.Rulesets.Taiko\osu.Game.Rulesets.Taiko.csproj", "{8FCA7CC4-DEFB-4009-A1BD-B919B5D4B277}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sora.Framework", "src\Sora.Framework\Sora.Framework.csproj", "{53B95480-0384-45BA-AB1A-91806C32E69A}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sora", "src\Sora\Sora.csproj", "{6C44EF7D-360D-4E78-963B-138F1058D415}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sora.API", "plugins\Sora.API\Sora.API.csproj", "{21E9474B-753B-4913-B4FE-742F1009BF5E}"
@@ -59,10 +57,6 @@ Global
 		{8FCA7CC4-DEFB-4009-A1BD-B919B5D4B277}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8FCA7CC4-DEFB-4009-A1BD-B919B5D4B277}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8FCA7CC4-DEFB-4009-A1BD-B919B5D4B277}.Release|Any CPU.Build.0 = Release|Any CPU
-		{53B95480-0384-45BA-AB1A-91806C32E69A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{53B95480-0384-45BA-AB1A-91806C32E69A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{53B95480-0384-45BA-AB1A-91806C32E69A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{53B95480-0384-45BA-AB1A-91806C32E69A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{6C44EF7D-360D-4E78-963B-138F1058D415}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{6C44EF7D-360D-4E78-963B-138F1058D415}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6C44EF7D-360D-4E78-963B-138F1058D415}.Release|Any CPU.ActiveCfg = Release|Any CPU

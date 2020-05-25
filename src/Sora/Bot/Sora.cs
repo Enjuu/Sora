@@ -8,12 +8,19 @@ using Sora.Database;
 using Sora.Database.Models;
 using Sora.Enums;
 using Sora.EventArgs.BanchoEventArgs;
-using Sora.Framework;
-using Sora.Framework.Enums;
-using Sora.Framework.Objects;
-using Sora.Framework.Packets.Server;
-using Sora.Framework.Utilities;
 using Sora.Services;
+using CountryId = Sora.Enums.CountryId;
+using Crypto = Sora.Utilities.Crypto;
+using Logger = Sora.Utilities.Logger;
+using LoginPermissions = Sora.Enums.LoginPermissions;
+using MessageStruct = Sora.Packets.Server.MessageStruct;
+using Mod = Sora.Enums.Mod;
+using PlayMode = Sora.Enums.PlayMode;
+using Presence = Sora.Objects.Presence;
+using PresenceSingle = Sora.Packets.Server.PresenceSingle;
+using Status = Sora.Enums.Status;
+using UserInformation = Sora.Objects.UserInformation;
+using UserStatus = Sora.Objects.UserStatus;
 
 namespace Sora.Bot
 {
@@ -44,7 +51,7 @@ namespace Sora.Bot
         private readonly object _mut = new object();
         private readonly IServiceProvider _provider;
         private readonly PresenceService _ps;
-        
+
         private readonly DbUser _dbUser;
 
         public Sora(SoraDbContext ctx,
@@ -68,11 +75,11 @@ namespace Sora.Bot
             #endregion
 
             ctx.Migrate();
-            
+
             // this will fail if bot already exists!
             DbUser.RegisterUser(_ctx, Permission.From(Permission.GROUP_ADMIN), "Sora", "bot@gigamons.de",
                 Crypto.RandomString(32), false, PasswordVersion.V2, 100);
-            
+
             _dbUser = DbUser.GetDbUser(ctx, 100).Result;
         }
 
@@ -83,8 +90,8 @@ namespace Sora.Bot
         {
             var t = typeof(T);
             var tArgs = (from cInfo in t.GetConstructors()
-                         from pInfo in cInfo.GetParameters()
-                         select _provider.GetService(pInfo.ParameterType)).ToArray();
+                from pInfo in cInfo.GetParameters()
+                select _provider.GetService(pInfo.ParameterType)).ToArray();
 
             if (tArgs.Any(x => x == null))
                 throw new Exception("Could not find Dependency, are you sure you registered the Dependency?");
@@ -100,7 +107,7 @@ namespace Sora.Bot
                         Description = cls.Description,
                         ExpectedArgs = cls.ExpectedArgs,
                         RequiredPermission = cls.RequiredPermission,
-                        Callback = cls.Execute
+                        Callback = cls.Execute,
                     }
                 );
             }
@@ -108,7 +115,7 @@ namespace Sora.Bot
 
         public Task RunAsync()
         {
-            BotPresence = new Presence(_dbUser.ToUser())
+            BotPresence = new Presence
             {
                 Status = new UserStatus
                 {
@@ -117,7 +124,7 @@ namespace Sora.Bot
                     BeatmapChecksum = "nothing",
                     BeatmapId = 0,
                     StatusText = "over you!",
-                    CurrentMods = Mod.TouchDevice
+                    CurrentMods = Mod.TouchDevice,
                 },
                 Info = new UserInformation
                 {
@@ -126,16 +133,18 @@ namespace Sora.Bot
                     ClientPermission = LoginPermissions.User |
                                        LoginPermissions.Administrator |
                                        LoginPermissions.Moderator |
-                                       LoginPermissions.Supporter|
+                                       LoginPermissions.Supporter |
                                        LoginPermissions.TorneyStaff |
                                        LoginPermissions.BAT,
                     CountryId = CountryId.XX,
-                    TimeZone = 0
+                    TimeZone = 0,
                 },
                 ["BOT"] = true,
-                ["IRC"] = true
+                ["IRC"] = true,
+                User = _dbUser,
             };
-            
+
+
             _ps.Push(new PresenceSingle(BotPresence.User.Id));
 
             _ps.Join(BotPresence);
@@ -166,9 +175,9 @@ namespace Sora.Bot
 
         public async void SendMessage(string msg, string channelTarget, bool isPrivate)
         {
-            if (!_cs.TryGet(channelTarget, out var _))
+            if (!_cs.TryGet(channelTarget, out _))
                 return;
-            
+
             if (!isPrivate)
                 await _ev.RunEvent(
                     EventType.BanchoSendIrcMessage,
@@ -179,9 +188,9 @@ namespace Sora.Bot
                             Message = msg,
                             Username = BotPresence.User.UserName,
                             ChannelTarget = channelTarget,
-                            SenderId = BotPresence.User.Id
+                            SenderId = BotPresence.User.Id,
                         },
-                        Pr = BotPresence
+                        Pr = BotPresence,
                     }
                 );
             else
@@ -194,9 +203,9 @@ namespace Sora.Bot
                             Message = msg,
                             Username = BotPresence.User.UserName,
                             ChannelTarget = channelTarget,
-                            SenderId = BotPresence.User.Id
+                            SenderId = BotPresence.User.Id,
                         },
-                        Pr = BotPresence
+                        Pr = BotPresence,
                     }
                 );
         }
@@ -209,8 +218,8 @@ namespace Sora.Bot
 
             if (!args.Message.Message.StartsWith("!"))
                 return;
-            
-            if (!_cs.TryGet(args.Message.ChannelTarget, out var _))
+
+            if (!_cs.TryGet(args.Message.ChannelTarget, out _))
                 return;
 
             var cmds = GetCommands(args.Message.Message.TrimStart('!'));

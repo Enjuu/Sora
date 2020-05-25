@@ -1,7 +1,7 @@
 using Sora.Attributes;
 using Sora.Enums;
 using Sora.EventArgs.BanchoEventArgs;
-using Sora.Framework.Enums;
+using MultiSlotStatus = Sora.Enums.MultiSlotStatus;
 
 namespace Sora.Events.BanchoEvents.Multiplayer.Match
 {
@@ -13,7 +13,7 @@ namespace Sora.Events.BanchoEvents.Multiplayer.Match
         {
             if (args.Pr.ActiveMatch == null)
                 return;
-            
+
             var slot = args.Pr.ActiveMatch.GetSlotByUserId(args.Pr.User.Id);
 
             slot.Status = MultiSlotStatus.NotReady;

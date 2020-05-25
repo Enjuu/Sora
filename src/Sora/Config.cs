@@ -1,4 +1,6 @@
-using Sora.Framework.Utilities;
+using CPisstaube = Sora.Utilities.CPisstaube;
+using IConfig = Sora.Utilities.IConfig;
+using IPisstaubeConfig = Sora.Utilities.IPisstaubeConfig;
 
 namespace Sora
 {
@@ -31,13 +33,13 @@ namespace Sora
         public string ScreenShotHostname;
         public bool FreeDirect;
     }
-    
+
     public class Config : IServerConfig, IMySqlConfig, IPisstaubeConfig
     {
         public CServer Server { get; set; }
         public CMySql MySql { get; set; }
         public CPisstaube Pisstaube { get; set; }
-        
+
         public string Esc { get; set; }
     }
 }

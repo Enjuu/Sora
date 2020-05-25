@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore;
 using osu.Framework.Extensions.IEnumerableExtensions;
-using Sora.Framework.Enums;
+using PlayMode = Sora.Enums.PlayMode;
 
 namespace Sora.Database.Models
 {
@@ -18,7 +18,7 @@ namespace Sora.Database.Models
         [Required]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
-        
+
         [Required]
         public int OwnerId { get; set; }
 
@@ -90,18 +90,18 @@ namespace Sora.Database.Models
         [UsedImplicitly]
         [ForeignKey(nameof(OwnerId))]
         public DbUser Owner { get; set; }
-        
+
         public static async Task<DbLeaderboard> GetLeaderboardAsync(SoraDbContext ctx, int userId)
         {
             var result = ctx.Leaderboard.Where(t => t.OwnerId == userId).Select(e => e).AsNoTracking().FirstOrDefault();
             if (result != null)
                 return result;
 
-            var lb = new DbLeaderboard{OwnerId = userId};
-            
+            var lb = new DbLeaderboard {OwnerId = userId};
+
             await ctx.Leaderboard.AddAsync(lb);
             await ctx.SaveChangesAsync();
-            
+
             return lb;
         }
 
@@ -118,21 +118,21 @@ namespace Sora.Database.Models
                     else
                         TotalScoreOsu += score;
                     break;
-                
+
                 case PlayMode.Taiko:
                     if (ranked)
                         RankedScoreTaiko += score;
                     else
                         TotalScoreTaiko += score;
                     break;
-                
+
                 case PlayMode.Ctb:
                     if (ranked)
                         RankedScoreCtb += score;
                     else
                         TotalScoreCtb += score;
                     break;
-                
+
                 case PlayMode.Mania:
                     if (ranked)
                         RankedScoreMania += score;
@@ -143,7 +143,7 @@ namespace Sora.Database.Models
                     throw new ArgumentOutOfRangeException(nameof(mode), mode, null);
             }
         }
-        
+
         public void IncreasePlaycount(PlayMode mode)
         {
             switch (mode)
@@ -151,19 +151,19 @@ namespace Sora.Database.Models
                 case PlayMode.Osu:
                     PlayCountOsu++;
                     break;
-                
+
                 case PlayMode.Taiko:
                     PlayCountTaiko++;
                     break;
-                
+
                 case PlayMode.Ctb:
                     PlayCountCtb++;
                     break;
-                
+
                 case PlayMode.Mania:
                     PlayCountMania++;
                     break;
-                
+
                 default:
                     throw new ArgumentOutOfRangeException(nameof(mode), mode, null);
             }
@@ -177,7 +177,7 @@ namespace Sora.Database.Models
                 PlayMode.Taiko => PerformancePointsTaiko <= 0 ? 0 : -1,
                 PlayMode.Ctb => PerformancePointsCtb <= 0 ? 0 : -1,
                 PlayMode.Mania => PerformancePointsMania <= 0 ? 0 : -1,
-                _ => throw new ArgumentOutOfRangeException(nameof(mode), mode, null)
+                _ => throw new ArgumentOutOfRangeException(nameof(mode), mode, null),
             };
 
             if (pos == -1)
@@ -185,15 +185,15 @@ namespace Sora.Database.Models
                 {
                     PlayMode.Osu => ctx.Leaderboard.Count(x => x.PerformancePointsOsu > PerformancePointsOsu),
                     PlayMode.Taiko => ctx.Leaderboard
-                                         .Count(x => x.PerformancePointsTaiko > PerformancePointsTaiko),
+                        .Count(x => x.PerformancePointsTaiko > PerformancePointsTaiko),
                     PlayMode.Ctb => ctx.Leaderboard.Count(x => x.PerformancePointsCtb > PerformancePointsCtb),
                     PlayMode.Mania => ctx.Leaderboard
-                                         .Count(x => x.PerformancePointsMania > PerformancePointsMania),
-                    _ => throw new ArgumentOutOfRangeException(nameof(mode), mode, null)
+                        .Count(x => x.PerformancePointsMania > PerformancePointsMania),
+                    _ => throw new ArgumentOutOfRangeException(nameof(mode), mode, null),
                 };
             else
                 return (uint) pos;
-            
+
             return (uint) pos + 1;
         }
 
@@ -206,7 +206,7 @@ namespace Sora.Database.Models
             ctx
                 .Scores
                 .Where(s => s.PlayMode == mode)
-               //.Where(s => (s.Mods & Mod.Relax) == 0 && (s.Mods & Mod.Relax2) == 0)
+                //.Where(s => (s.Mods & Mod.Relax) == 0 && (s.Mods & Mod.Relax2) == 0)
                 .Where(s => s.UserId == OwnerId)
                 .Take(500)
                 .OrderByDescending(s => s.PerformancePoints)
@@ -229,17 +229,17 @@ namespace Sora.Database.Models
         public void UpdatePp(SoraDbContext ctx, PlayMode mode)
         {
             var totalPp = ctx
-                                 .Scores
-                                 //.Where(s => (s.Mods & Mod.Relax) == 0)
-                                 .Where(s => s.PlayMode == mode)
-                                 .Where(s => s.UserId == OwnerId)
-                                 .OrderByDescending(s => s.PerformancePoints)
-                                 .ToList() // There goes our memory one more time :c
-                                 .GroupBy(s => s.FileMd5)
-                                 .Select(s => s.First())
-                                 .Take(100)
-                                 .Select((t, i) => t.PerformancePoints * Math.Pow(0.95d, i))
-                                 .Sum();
+                .Scores
+                //.Where(s => (s.Mods & Mod.Relax) == 0)
+                .Where(s => s.PlayMode == mode)
+                .Where(s => s.UserId == OwnerId)
+                .OrderByDescending(s => s.PerformancePoints)
+                .ToList() // There goes our memory one more time :c
+                .GroupBy(s => s.FileMd5)
+                .Select(s => s.First())
+                .Take(100)
+                .Select((t, i) => t.PerformancePoints * Math.Pow(0.95d, i))
+                .Sum();
             switch (mode)
             {
                 case PlayMode.Osu:
@@ -266,7 +266,7 @@ namespace Sora.Database.Models
         public async Task SaveChanges(SoraDbContext ctx)
         {
             ctx.Update(this);
-            
+
             await ctx.SaveChangesAsync();
         }
     }

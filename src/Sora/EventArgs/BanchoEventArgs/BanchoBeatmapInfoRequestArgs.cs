@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Sora.Framework.Objects;
+using Presence = Sora.Objects.Presence;
 
 namespace Sora.EventArgs.BanchoEventArgs
 {

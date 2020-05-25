@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
-using Sora.Framework.Enums;
-using Sora.Framework.Utilities;
+using Beatmap = Sora.Utilities.Beatmap;
+using BeatmapSet = Sora.Utilities.BeatmapSet;
+using Pisstaube = Sora.Utilities.Pisstaube;
+using PlayMode = Sora.Enums.PlayMode;
 
 namespace Sora.Database.Models
 {
@@ -12,9 +14,9 @@ namespace Sora.Database.Models
     public enum DbBeatmapFlags
     {
         None = 1 << 0,
-        RankedFreeze = 1 << 1
+        RankedFreeze = 1 << 1,
     }
-    
+
     [Table("Beatmaps")]
     public class DbBeatmap
     {
@@ -28,7 +30,7 @@ namespace Sora.Database.Models
 
         [Required]
         public Pisstaube.RankedStatus RankedStatus { get; set; }
-        
+
         [Required]
         [Column(TypeName = "varchar(32)")]
         public string FileMd5 { get; set; }
@@ -54,24 +56,21 @@ namespace Sora.Database.Models
 
         [Required]
         public DbBeatmapFlags Flags { get; set; }
-        
-        public static DbBeatmap FromBeatmap(Beatmap beatmap, BeatmapSet parent)
+
+        public static DbBeatmap FromBeatmap(Beatmap beatmap, BeatmapSet parent) => new DbBeatmap
         {
-            return new DbBeatmap
-            {
-                Id = beatmap.BeatmapID,
-                SetId = parent.SetID,
-                RankedStatus = parent.RankedStatus,
-                FileMd5 = beatmap.FileMD5,
-                PlayMode = beatmap.Mode,
-                Artist = parent.Artist,
-                Title = parent.Title,
-                DiffName = beatmap.DiffName,
-                FileName = $"{parent.Artist} - {parent.Title} ({parent.Creator}) [{beatmap.DiffName}].osu",
-                Flags = DbBeatmapFlags.None
-            };
-        }
-        
+            Id = beatmap.BeatmapID,
+            SetId = parent.SetID,
+            RankedStatus = parent.RankedStatus,
+            FileMd5 = beatmap.FileMD5,
+            PlayMode = beatmap.Mode,
+            Artist = parent.Artist,
+            Title = parent.Title,
+            DiffName = beatmap.DiffName,
+            FileName = $"{parent.Artist} - {parent.Title} ({parent.Creator}) [{beatmap.DiffName}].osu",
+            Flags = DbBeatmapFlags.None,
+        };
+
         public static IEnumerable<DbBeatmap> FromBeatmapSet(BeatmapSet set) =>
             set.ChildrenBeatmaps.Select(beatmap => FromBeatmap(beatmap, set));
 

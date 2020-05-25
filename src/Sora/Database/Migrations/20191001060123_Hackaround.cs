@@ -7,29 +7,29 @@ namespace Sora.Database.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
-                name: "FK_Leaderboard_Users_Id",
-                table: "Leaderboard");
+                "FK_Leaderboard_Users_Id",
+                "Leaderboard");
 
             migrationBuilder.DropColumn(
-                name: "ReplayId",
-                table: "Scores");
+                "ReplayId",
+                "Scores");
 
             migrationBuilder.AddColumn<int>(
-                name: "OwnerId",
-                table: "Leaderboard",
+                "OwnerId",
+                "Leaderboard",
                 nullable: false,
                 defaultValue: 0);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Leaderboard_OwnerId",
-                table: "Leaderboard",
-                column: "OwnerId");
+                "IX_Leaderboard_OwnerId",
+                "Leaderboard",
+                "OwnerId");
 
             migrationBuilder.AddForeignKey(
-                name: "FK_Leaderboard_Users_OwnerId",
-                table: "Leaderboard",
-                column: "OwnerId",
-                principalTable: "Users",
+                "FK_Leaderboard_Users_OwnerId",
+                "Leaderboard",
+                "OwnerId",
+                "Users",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Cascade);
         }
@@ -37,27 +37,27 @@ namespace Sora.Database.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
-                name: "FK_Leaderboard_Users_OwnerId",
-                table: "Leaderboard");
+                "FK_Leaderboard_Users_OwnerId",
+                "Leaderboard");
 
             migrationBuilder.DropIndex(
-                name: "IX_Leaderboard_OwnerId",
-                table: "Leaderboard");
+                "IX_Leaderboard_OwnerId",
+                "Leaderboard");
 
             migrationBuilder.DropColumn(
-                name: "OwnerId",
-                table: "Leaderboard");
+                "OwnerId",
+                "Leaderboard");
 
             migrationBuilder.AddColumn<int>(
-                name: "ReplayId",
-                table: "Scores",
+                "ReplayId",
+                "Scores",
                 nullable: true);
 
             migrationBuilder.AddForeignKey(
-                name: "FK_Leaderboard_Users_Id",
-                table: "Leaderboard",
-                column: "Id",
-                principalTable: "Users",
+                "FK_Leaderboard_Users_Id",
+                "Leaderboard",
+                "Id",
+                "Users",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Cascade);
         }

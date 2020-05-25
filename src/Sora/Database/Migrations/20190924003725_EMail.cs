@@ -7,16 +7,16 @@ namespace Sora.Database.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<string>(
-                name: "EMail",
-                table: "Users",
+                "EMail",
+                "Users",
                 nullable: true);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "EMail",
-                table: "Users");
+                "EMail",
+                "Users");
         }
     }
 }

@@ -3,10 +3,9 @@ using System.IO;
 using Sora.Attributes;
 using Sora.Enums;
 using Sora.EventArgs.BanchoEventArgs;
-using Sora.Framework;
-using Sora.Framework.Objects;
-using Sora.Framework.Packets.Server;
-using Sora.Framework.Utilities;
+using Hex = Sora.Utilities.Hex;
+using MessageStruct = Sora.Packets.Server.MessageStruct;
+using Presence = Sora.Objects.Presence;
 
 namespace Sora.Bot.Commands
 {
@@ -23,10 +22,7 @@ namespace Sora.Bot.Commands
 
         public Permission RequiredPermission => Permission.From(Permission.GROUP_DEVELOPER);
 
-        public DebugCommand(EventManager ev)
-        {
-            _ev = ev;
-        }
+        public DebugCommand(EventManager ev) => _ev = ev;
 
         public bool Execute(Presence executor, string[] args)
         {
@@ -58,8 +54,8 @@ namespace Sora.Bot.Commands
                                   $"\nPacketData: {Hex.ToHex(((MemoryStream) args.Data.BaseStream).ToArray())}",
                         Username = args.Pr.User.UserName,
                         ChannelTarget = args.Pr.User.UserName,
-                        SenderId = args.Pr.User.Id
-                    }
+                        SenderId = args.Pr.User.Id,
+                    },
                 });
         }
     }

@@ -31,12 +31,9 @@ namespace Sora.Database
     public static class HackyDbSetGetContextTrick
     {
         public static DbContext GetContext<TEntity>(this DbSet<TEntity> dbSet)
-            where TEntity : class
-        {
-            return (DbContext) dbSet
-                               .GetType().GetTypeInfo()
-                               .GetField("_context", BindingFlags.NonPublic | BindingFlags.Instance)
-                               ?.GetValue(dbSet);
-        }
+            where TEntity : class => (DbContext) dbSet
+            .GetType().GetTypeInfo()
+            .GetField("_context", BindingFlags.NonPublic | BindingFlags.Instance)
+            ?.GetValue(dbSet);
     }
 }

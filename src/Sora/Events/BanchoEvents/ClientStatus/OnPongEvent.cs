@@ -2,7 +2,7 @@ using System;
 using Sora.Attributes;
 using Sora.Enums;
 using Sora.EventArgs.BanchoEventArgs;
-using Sora.Framework.Packets.Server;
+using HandleUpdate = Sora.Packets.Server.HandleUpdate;
 
 namespace Sora.Events.BanchoEvents.ClientStatus
 {
@@ -13,12 +13,12 @@ namespace Sora.Events.BanchoEvents.ClientStatus
         public void OnPong(BanchoPongArgs args)
         {
             args.Pr["LAST_PONG"] = DateTime.Now;
-                
-            if ((args.Pr.Spectator == null ||
-                args.Pr.Spectator?.Host != args.Pr) ||
+
+            if (args.Pr.Spectator == null ||
+                args.Pr.Spectator?.Host != args.Pr ||
                 args.Pr.Spectator?.SpectatorCount <= 0)
                 return;
-            
+
             args.Pr.Spectator.Push(new HandleUpdate(args.Pr.Spectator.Host));
         }
     }

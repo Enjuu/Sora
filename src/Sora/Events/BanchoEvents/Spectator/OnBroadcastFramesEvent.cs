@@ -1,7 +1,7 @@
 using Sora.Attributes;
 using Sora.Enums;
 using Sora.EventArgs.BanchoEventArgs;
-using Sora.Framework.Packets.Server;
+using SpectatorFrames = Sora.Packets.Server.SpectatorFrames;
 
 namespace Sora.Events.BanchoEvents.Spectator
 {
@@ -13,7 +13,7 @@ namespace Sora.Events.BanchoEvents.Spectator
         {
             if (args.Pr.Spectator?.Host != args.Pr)
                 return;
-            
+
             args.Pr.Spectator?.Push(new SpectatorFrames(args.Frames));
         }
     }

@@ -4,7 +4,6 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using Colorful;
 using FluentEmail.Core;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
@@ -12,8 +11,8 @@ using Newtonsoft.Json;
 using osu.Framework.IO.Network;
 using Sora.Database;
 using Sora.Database.Models;
-using Sora.Framework;
-using Sora.Framework.Utilities;
+using Sora.Utilities;
+
 
 namespace Sora.API.Controllers.api.v1
 {

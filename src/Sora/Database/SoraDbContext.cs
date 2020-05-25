@@ -1,9 +1,5 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore;
-using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
-using Pomelo.EntityFrameworkCore.MySql.Storage;
+﻿using Microsoft.EntityFrameworkCore;
 using Sora.Database.Models;
-using Sora.Framework.Utilities;
 
 namespace Sora.Database
 {
@@ -28,7 +24,7 @@ namespace Sora.Database
         {
             Database.Migrate();
         }
-        
+
         private class MySqlConfig : IMySqlConfig
         {
             public CMySql MySql { get; set; }

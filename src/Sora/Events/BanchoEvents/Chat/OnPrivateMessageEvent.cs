@@ -1,10 +1,13 @@
 using Sora.Attributes;
 using Sora.Enums;
 using Sora.EventArgs.BanchoEventArgs;
-using Sora.Framework.Packets.Server;
-using Sora.Framework.Utilities;
 using Sora.Services;
 using Sora.Utilities;
+using Announce = Sora.Packets.Server.Announce;
+using LCol = Sora.Utilities.LCol;
+using Logger = Sora.Utilities.Logger;
+using MessageStruct = Sora.Packets.Server.MessageStruct;
+using SendIrcMessage = Sora.Packets.Server.SendIrcMessage;
 
 namespace Sora.Events.BanchoEvents.Chat
 {
@@ -23,11 +26,12 @@ namespace Sora.Events.BanchoEvents.Chat
         [Event(EventType.BanchoSendIrcMessagePrivate)]
         public void OnPrivateMessage(BanchoSendIrcMessageArgs args)
         {
-            if (!_ps.TryGet(args.Message.ChannelTarget, out var target)) {
+            if (!_ps.TryGet(args.Message.ChannelTarget, out var target))
+            {
                 args.Pr.Push(new Announce("This User is Offline!"));
                 return;
             }
-  
+
             Logger.Info(
                 $"{LCol.RED}{args.Pr.User.UserName}",
                 $"{LCol.PURPLE}( {args.Pr.User.Id} )",
@@ -42,9 +46,9 @@ namespace Sora.Events.BanchoEvents.Chat
                 Username = args.Pr.User.UserName,
                 Message = _filter.Filter(args.Message.Message),
                 ChannelTarget = args.Pr.User.UserName,
-                SenderId = args.Pr.User.Id
+                SenderId = args.Pr.User.Id,
             };
-            
+
             target.Push(new SendIrcMessage(newMsg));
         }
     }

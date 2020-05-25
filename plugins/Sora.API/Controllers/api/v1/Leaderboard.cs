@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Sora.Database;
 using Sora.Database.Models;
-using Sora.Framework.Enums;
+using Sora.Enums;
 
 namespace Sora.API.Controllers.api.v1
 {
