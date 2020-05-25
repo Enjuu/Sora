@@ -123,10 +123,10 @@ namespace Sora.Database.Models
                 .AsParallel()
                 .GroupBy(s =>
                     s.UserId) // TODO: this is stupid. but we cant change it :c
-                .Take(50)
                 .Select(s => s.First())
                 .OrderByDescending(score => score.TotalScore)
-                .ThenByDescending(s => s.Accuracy);
+                .ThenByDescending(s => s.Accuracy)
+                .Take(50);
 
             foreach (var dbScore in query)
             {
