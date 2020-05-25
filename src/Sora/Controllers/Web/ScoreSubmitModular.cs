@@ -24,6 +24,8 @@ using ScoreSubmissionParser = Sora.Utilities.ScoreSubmissionParser;
 
 namespace Sora.Controllers.Web
 {
+    [ApiController]
+    [Route("/web/")]
     public class ScoreSubmitModular : Controller
     {
         #region POST /web/osu-submit-modular-selector.php
