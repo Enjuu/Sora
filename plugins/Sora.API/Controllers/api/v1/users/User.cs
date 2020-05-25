@@ -39,7 +39,7 @@ namespace Sora.API.Controllers.api.v1.users
             {
                 user.Id,
                 user.UserName,
-                Permissions = Permission.From(user.Permissions).Perms,
+                user.Permissions,
                 user.Status,
                 user.StatusUntil,
                 user.StatusReason,
@@ -72,7 +72,7 @@ namespace Sora.API.Controllers.api.v1.users
             {
                 user.Id,
                 user.UserName,
-                Permissions = Permission.From(user.Permissions).Perms,
+                user.Permissions,
                 user.Status,
                 user.StatusUntil,
                 user.StatusReason,
