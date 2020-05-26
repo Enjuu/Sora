@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Caching.Redis;
+using ServiceStack.Redis;
 
 namespace Sora.API.Controllers.api.v1.users
 {
@@ -11,9 +11,9 @@ namespace Sora.API.Controllers.api.v1.users
     [AllowAnonymous]
     public class PerformanceBoard : Controller
     {
-        private readonly RedisCache _redis;
+        private readonly RedisClient _redis;
 
-        public PerformanceBoard(RedisCache redis)
+        public PerformanceBoard(RedisClient redis)
         {
             _redis = redis;
         }
