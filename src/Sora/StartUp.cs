@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Redis;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
@@ -111,17 +112,14 @@ namespace Sora
                 .AddSingleton<IrcServer>()
                 .AddSingleton<ChatFilter>()
                 .AddSingleton(new EventManager(new List<Assembly> {Assembly.GetEntryAssembly()}))
-                .AddSingleton<PluginService>();
+                .AddSingleton<PluginService>()
+                .AddSingleton(new RedisCache(new RedisCacheOptions
+                {
+                    Configuration = "127.0.0.1",
+                    InstanceName = "master"
+                }));
 
             services.AddLogging();
-
-            services.AddDbContext<SoraDbContext>();
-            services.AddDistributedRedisCache(option =>
-            { 
-                option.Configuration = "127.0.0.1";
-                option.InstanceName = "master";
-            });
-
             services.AddAuthentication(x =>
             {
                 x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
