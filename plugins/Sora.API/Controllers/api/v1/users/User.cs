@@ -49,7 +49,7 @@ namespace Sora.API.Controllers.api.v1.users
                 TotalScore = lb.TotalScoreOsu,
                 RankedScore = lb.RankedScoreOsu,
                 PlayCount = lb.PlayCountOsu,
-                Followers = DbFriend.GetFriends(_context, user.Id).Count(),
+                Followers = await DbFriend.GetFollowerCount(_context, user.Id),
             });
         }
 

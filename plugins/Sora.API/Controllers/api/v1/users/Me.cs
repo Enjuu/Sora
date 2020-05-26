@@ -58,7 +58,8 @@ namespace Sora.API.Controllers.api.v1.users
                 Performance = lb.PerformancePointsOsu,
                 TotalScore = lb.TotalScoreOsu,
                 RankedScore = lb.RankedScoreOsu,
-                PlayCount = lb.PlayCountOsu
+                PlayCount = lb.PlayCountOsu,
+                Followers = await DbFriend.GetFollowerCount(_context, user.Id),
             });
         }
     }
