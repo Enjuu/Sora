@@ -16,10 +16,7 @@ namespace Sora.API.Controllers.api.v1
     {
         private SoraDbContext _context;
 
-        public LatestDonators(SoraDbContext context)
-        {
-            _context = context;
-        }
+        public LatestDonators(SoraDbContext context) => _context = context;
 
         [HttpGet]
         [DisableCors]

@@ -13,10 +13,7 @@ namespace Sora.API.Controllers.api.v1.users
     {
         private readonly RedisClient _redis;
 
-        public PerformanceBoard(RedisClient redis)
-        {
-            _redis = redis;
-        }
+        public PerformanceBoard(RedisClient redis) => _redis = redis;
 
         [AllowAnonymous]
         [DisableCors]

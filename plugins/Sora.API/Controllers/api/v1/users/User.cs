@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
@@ -15,10 +16,7 @@ namespace Sora.API.Controllers.api.v1.users
     {
         private readonly SoraDbContext _context;
 
-        public User(SoraDbContext context)
-        {
-            _context = context;
-        }
+        public User(SoraDbContext context) => _context = context;
 
         [AllowAnonymous]
         [DisableCors]
@@ -50,7 +48,8 @@ namespace Sora.API.Controllers.api.v1.users
                 Performance = lb.PerformancePointsOsu,
                 TotalScore = lb.TotalScoreOsu,
                 RankedScore = lb.RankedScoreOsu,
-                PlayCount = lb.PlayCountOsu
+                PlayCount = lb.PlayCountOsu,
+                Followers = DbFriend.GetFriends(_context, user.Id).Count(),
             });
         }
 

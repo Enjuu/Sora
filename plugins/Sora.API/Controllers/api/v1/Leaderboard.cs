@@ -16,10 +16,7 @@ namespace Sora.API.Controllers.api.v1
     {
         private SoraDbContext _context;
 
-        public Leaderboard(SoraDbContext context)
-        {
-            _context = context;
-        }
+        public Leaderboard(SoraDbContext context) => _context = context;
 
         public struct LBResponse
         {
