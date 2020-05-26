@@ -116,6 +116,11 @@ namespace Sora
             services.AddLogging();
 
             services.AddDbContext<SoraDbContext>();
+            services.AddDistributedRedisCache(option =>
+            { 
+                option.Configuration = "127.0.0.1";
+                option.InstanceName = "master";
+            });
 
             services.AddAuthentication(x =>
             {
