@@ -38,7 +38,7 @@ namespace Sora.Bot.Commands
         {
             if (ps.TryGet(args[1], out var pr))
             {
-                sora.SendMessage("Your Account is currently in restricted mode.", args[1], true);
+                sora.SendMessage("Your account is currently in restricted mode.", args[1], true);
 
                 pr.Push(new LoginResponse(LoginResponses.Failed));
             }

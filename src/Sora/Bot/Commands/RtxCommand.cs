@@ -12,7 +12,7 @@ namespace Sora.Bot.Commands
     class RtxCommand : ISoraCommand
     {
         public string Command => "rtx";
-        public string Description => "Send an RTX on an User";
+        public string Description => "Send an RTX to a user";
         public List<Argument> Args
             => new List<Argument>
             {
